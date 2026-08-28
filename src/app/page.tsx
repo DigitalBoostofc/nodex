@@ -1,0 +1,200 @@
+import Link from "next/link";
+
+import { CtaForm } from "@/components/cta-block";
+import { FaqSection, type FaqItem } from "@/components/faq";
+import { StepList, type Step } from "@/components/step-track";
+import { HeroBackdrop, HeroPill, Section, SectionHead } from "@/components/ui";
+import { WaLink } from "@/components/wa-link";
+
+/** Sem vermelho nesta seção — ele volta na solução (Brand Book §09, seção 02). */
+const PROBLEMS = [
+  {
+    title: "A equipe responde o mesmo recado o dia inteiro",
+    text: "Pergunta de cliente, status de pedido, agendamento. O que deveria ser o sistema vira conversa repetida.",
+  },
+  {
+    title: "O processo mora na cabeça de alguém",
+    text: "Planilha, WhatsApp e “o fulano sabe”. Quando essa pessoa falta, a operação para.",
+  },
+  {
+    title: "Ferramenta pronta não cabe no seu jeito de vender",
+    text: "CRM genérico, chatbot de template, automação que quebra no segundo desvio. Você se adapta ao software, e não o contrário.",
+  },
+];
+
+const PROCESS: Step[] = [
+  {
+    title: "Diagnóstico",
+    text: "Mapeamos o processo, o dado e o que conta como sucesso.",
+    output: "escopo da menor entrega que já muda o dia.",
+  },
+  {
+    title: "Desenho",
+    text: "Arquitetura, telas e regras antes de escrever o que não precisa existir.",
+    output: "plano fechado.",
+  },
+  {
+    title: "Construção",
+    text: "Código em produção, com teste e acompanhamento desde o primeiro dia.",
+    output: "versão usável.",
+  },
+  {
+    title: "Operação",
+    text: "Medimos o efeito, ajustamos e deixamos o time no comando.",
+    output: "sistema rodando, não um protótipo na gaveta.",
+  },
+];
+
+const FAQ: FaqItem[] = [
+  {
+    question: "Quanto tempo leva para ter a primeira versão no ar?",
+    answer:
+      "Depende do recorte. Na conversa de diagnóstico definimos a menor entrega que já muda o dia da operação. Dela sai prazo fechado, não um “depende” eterno.",
+  },
+  {
+    question: "Vocês usam ferramenta pronta ou constroem do zero?",
+    answer:
+      "Construímos o produto. Usamos bloco maduro por baixo, como banco, autenticação e base de app, para não reinventar o óbvio e gastar o tempo na regra do seu negócio.",
+  },
+  {
+    question: "Fico dono do código?",
+    answer:
+      "Trabalhamos com propriedade total do código ou licença de uso, dependendo do escopo e do investimento. O modelo é escolhido com você e escrito em contrato antes da primeira linha. Nunca vira discussão na entrega.",
+  },
+  {
+    question: "Precisa trocar os sistemas que já usamos?",
+    answer:
+      "Não. Ligamos no que já roda: CRM, ERP, planilha, WhatsApp. Substituir só entra em cena quando o sistema atual é o próprio problema, e essa decisão é tomada no diagnóstico.",
+  },
+  {
+    question: "E depois que o sistema entra no ar?",
+    answer:
+      "Ficamos como dono técnico: correção, evolução e acompanhamento do efeito na operação. O que o uso ensinar vira a próxima fatia do produto.",
+  },
+];
+
+export default function HomePage() {
+  return (
+    <>
+      <section className="relative overflow-hidden">
+        <HeroBackdrop glowStrength={0.5} />
+        <div className="relative mx-auto max-w-[1280px] px-5 pt-28 pb-28 text-center md:px-8 md:pt-35 lg:px-12">
+          <span className="nx-label tracking-[0.22em]">NODEX LABS</span>
+          <div className="mt-[22px] flex justify-center">
+            <HeroPill pulsing>SISTEMAS · CHATBOTS · AUTOMAÇÃO</HeroPill>
+          </div>
+          <h1 className="nx-h1 mx-auto mt-8 max-w-[20ch]">
+            Seu processo hoje é manual.{" "}
+            <span className="text-nx-red">Amanhã ele roda sozinho.</span>
+          </h1>
+          <p className="mx-auto mt-7 max-w-[58ch] text-[19px]/[1.65] font-light text-nx-muted">
+            A Nodex Labs constrói chatbots, automações e sistemas sob medida,
+            integrados ao processo que você já opera. Do primeiro diagnóstico à
+            manutenção depois de ir ao ar.
+          </p>
+          <div className="mt-11 flex flex-wrap justify-center gap-[14px]">
+            <WaLink className="nx-btn nx-btn-pill">Fale com a Nodex →</WaLink>
+            <Link href="/solucoes" className="nx-btn-ghost nx-btn-ghost-pill">
+              Ver soluções
+            </Link>
+          </div>
+          <p className="mt-11 font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-nx-dim">
+            DO DIAGNÓSTICO AO SISTEMA EM PRODUÇÃO.
+          </p>
+        </div>
+      </section>
+
+      <Section>
+        <SectionHead
+          eyebrow="O QUE TRAVA A OPERAÇÃO"
+          title={
+            <span className="block max-w-[26ch]">
+              O trabalho existe. O sistema não acompanha.
+            </span>
+          }
+          lead="Três padrões que aparecem em quase toda operação antes de existir sistema."
+          className="mb-14"
+        />
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
+          {PROBLEMS.map((problem) => (
+            <div
+              key={problem.title}
+              className="nx-card nx-card-hover p-[30px]"
+            >
+              <p className="mb-[14px] font-display text-[20px]/[1.3] font-medium text-white">
+                {problem.title}
+              </p>
+              <p className="nx-body">{problem.text}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section>
+        <SectionHead
+          eyebrow="COMO TRABALHAMOS"
+          title="Do diagnóstico ao sistema em produção."
+          lead="Sem mistério de escopo. Cada etapa tem saída visível."
+          className="mb-11"
+        />
+        <StepList steps={PROCESS} />
+      </Section>
+
+      <Section>
+        <SectionHead
+          eyebrow="EM PRODUÇÃO"
+          eyebrowTone="red"
+          title="Sistemas que já rodam de verdade."
+          lead="Não é deck. É operação."
+          leadClassName=""
+          className="mb-14"
+        />
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-5">
+          <Link
+            href="/cases/cleanox"
+            className="nx-card nx-card-hover block p-[34px] hover:text-inherit"
+          >
+            <span className="font-mono text-[11px]/[1] font-medium tracking-[0.2em] text-nx-muted">
+              HIGIENIZAÇÃO A DOMICÍLIO · SISTEMA OPERACIONAL
+            </span>
+            <p className="mt-5 mb-[14px] font-display text-[30px]/[1.2] font-medium tracking-[-0.01em] text-white">
+              Cleanox
+            </p>
+            <p className="mb-6 text-[17px]/[1.65] font-light text-nx-muted">
+              Sistema de ordens de serviço, agenda, financeiro e app do
+              profissional para higienização a domicílio.
+            </p>
+            <span className="text-[14px]/[1] font-medium text-nx-red">
+              Ver o case →
+            </span>
+          </Link>
+
+          <Link
+            href="/cases"
+            className="nx-card nx-card-hover block p-[34px] hover:text-inherit"
+          >
+            <span className="font-mono text-[11px]/[1] font-medium tracking-[0.2em] text-nx-muted">
+              OPERAÇÃO COMERCIAL · CRM
+            </span>
+            <p className="mt-5 mb-[14px] font-display text-[30px]/[1.2] font-medium tracking-[-0.01em] text-white">
+              AppexCRM
+            </p>
+            <p className="mb-6 text-[17px]/[1.65] font-light text-nx-muted">
+              CRM sob medida para a operação comercial.
+            </p>
+            <span className="text-[14px]/[1] font-medium text-nx-red">
+              Ver o case →
+            </span>
+          </Link>
+        </div>
+      </Section>
+
+      <CtaForm
+        title="Conte o problema. A gente responde com um plano."
+        lead="Formulário curto. Retorno em um dia útil."
+      />
+
+      <FaqSection items={FAQ} />
+    </>
+  );
+}

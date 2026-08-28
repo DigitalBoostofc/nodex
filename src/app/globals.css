@@ -1,0 +1,392 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Tokens — Brand Book v1.0 §03. Copiados literalmente do manual.
+   O site é dark-only: não existe tema claro (Brand Book §09, nota de dev).
+--------------------------------------------------------------------------- */
+/* `static` é obrigatório: sem ele o Tailwind v4 poda as variáveis que não
+   viram utilitário, e as --font-* somem. Como as classes abaixo as consomem
+   via var(), uma variável podada invalidaria a declaração que a usa. */
+@theme static {
+  --color-nx-black: #000000;
+  --color-nx-surface: #0b0b0b;
+  --color-nx-surface-2: #141414;
+  --color-nx-surface-3: #080808;
+  --color-nx-border: #1c1c1c;
+  --color-nx-border-soft: #1a1a1a;
+  --color-nx-border-warm: #2a1010;
+  --color-nx-border-warm-2: #3a1414;
+  --color-nx-muted: #8f8f8f;
+  --color-nx-dim: #5c5c5c;
+  --color-nx-text: #ffffff;
+  --color-nx-text-2: #d8d8d8;
+
+  --color-nx-red: #e10600;
+  --color-nx-red-hover: #ff1420;
+  --color-nx-red-deep: #8e0000;
+
+  /* Poppins/Plex/Mono chegam via next/font, que auto-hospeda com font-display:swap
+     (checklist de aceite do Brand Book §10). */
+  --font-display: var(--font-poppins), system-ui, sans-serif;
+  --font-body: var(--font-plex), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), monospace;
+
+  /* Movimento — Brand Book §10 */
+  --ease-nx: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-nx-black);
+    color: var(--color-nx-text);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-wrap: pretty;
+    overflow-x: hidden;
+  }
+
+  a {
+    color: var(--color-nx-red-hover);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: #fff;
+  }
+
+  ::selection {
+    background: var(--color-nx-red);
+    color: #fff;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #4d4d4d;
+  }
+
+  /* Anel de foco visível em todo elemento interativo — Brand Book §06 */
+  :focus-visible {
+    outline: 2px solid var(--color-nx-red-hover);
+    outline-offset: 3px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Tipografia — Brand Book §04. Escala de desktop com clamp para mobile.
+--------------------------------------------------------------------------- */
+@layer components {
+  /* Longhand em vez do atalho `font:` de propósito: no atalho, uma única
+     var() indefinida derruba a declaração inteira — inclusive font-size. */
+
+  /* LABEL · Mono 500 · 12/1/0.2em/uppercase */
+  .nx-label,
+  .nx-label-red {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.2em;
+  }
+
+  .nx-label {
+    color: var(--color-nx-muted);
+  }
+
+  .nx-label-red {
+    color: var(--color-nx-red);
+  }
+
+  /* DISPLAY · Poppins 300 · 64/1.05/-0.025em (mobile 38) */
+  .nx-h1 {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 5.6vw, 72px);
+    font-weight: 300;
+    line-height: 1.04;
+    letter-spacing: -0.028em;
+    color: #fff;
+  }
+
+  /* Variante de páginas internas — um degrau abaixo do hero da home */
+  .nx-h1-sub {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 4.6vw, 58px);
+    font-weight: 300;
+    line-height: 1.08;
+    letter-spacing: -0.022em;
+    color: #fff;
+  }
+
+  /* H2 · Poppins 500 · 44/1.1/-0.015em (mobile 30) */
+  .nx-h2 {
+    font-family: var(--font-display);
+    font-size: clamp(30px, 3.4vw, 44px);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    color: #fff;
+  }
+
+  /* H3 · Poppins 500 · 24/1.3 */
+  .nx-h3 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: #fff;
+  }
+
+  /* BODY L · Plex 300 · 18/1.65 */
+  .nx-body-l {
+    font-family: var(--font-body);
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--color-nx-muted);
+  }
+
+  /* BODY · Plex 300 · 16/1.65 */
+  .nx-body {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--color-nx-muted);
+  }
+
+  /* ---------------------------------------------------------------------
+     Superfícies — Brand Book §06. Card: padding 28+, raio 14, borda #1C1C1C.
+     No hover a borda aquece; o design do site adiciona elevação.
+  --------------------------------------------------------------------- */
+  .nx-card {
+    background: var(--color-nx-surface);
+    border: 1px solid var(--color-nx-border);
+    border-radius: 14px;
+    transition:
+      transform 200ms var(--ease-nx),
+      border-color 200ms,
+      box-shadow 200ms;
+  }
+
+  .nx-card-hover:hover {
+    border-color: var(--color-nx-red);
+    transform: translateY(-6px);
+    box-shadow:
+      0 18px 40px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(225, 6, 0, 0.25);
+  }
+
+  /* Card quente — usado em destaques (propósito, prova, blocos de fechamento) */
+  .nx-card-warm {
+    background: linear-gradient(160deg, #120202, #080808);
+    border: 1px solid var(--color-nx-border-warm);
+    border-radius: 14px;
+  }
+
+  /* Grade hairline: células separadas por 1px da cor da borda */
+  .nx-grid-hairline {
+    display: grid;
+    gap: 1px;
+    background: var(--color-nx-border);
+    border: 1px solid var(--color-nx-border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .nx-grid-hairline > * {
+    background: var(--color-nx-surface-3);
+    margin: 0;
+  }
+
+  /* Citação com filete vermelho — §05, hairline vermelha */
+  .nx-quote {
+    padding-left: 18px;
+    border-left: 2px solid var(--color-nx-red);
+  }
+
+  /* ---------------------------------------------------------------------
+     Botões — Brand Book §06. Alvo ≥ 44px, transição 160ms.
+  --------------------------------------------------------------------- */
+  .nx-btn {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1;
+    display: inline-block;
+    cursor: pointer;
+    padding: 17px 26px;
+    border-radius: 10px;
+    border: none;
+    color: #fff;
+    background: var(--color-nx-red);
+    transition: background 160ms var(--ease-nx);
+  }
+
+  .nx-btn:hover {
+    background: var(--color-nx-red-hover);
+    color: #fff;
+  }
+
+  .nx-btn-ghost {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1;
+    display: inline-block;
+    cursor: pointer;
+    padding: 16px 26px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    color: #fff;
+    background: transparent;
+    transition:
+      border-color 160ms,
+      color 160ms;
+  }
+
+  .nx-btn-ghost:hover {
+    border-color: var(--color-nx-red);
+    color: var(--color-nx-red-hover);
+  }
+
+  /* Variante pill — usada nos heroes */
+  .nx-btn-pill,
+  .nx-btn-ghost-pill {
+    border-radius: 999px;
+  }
+
+  .nx-btn-pill {
+    padding: 17px 28px;
+  }
+
+  .nx-btn-ghost-pill {
+    padding: 16px 28px;
+  }
+
+  /* Campo de formulário — §06, raio 10, erro com borda vermelha */
+  .nx-input {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.4;
+    color: #fff;
+    background: #050505;
+    border: 1px solid #262626;
+    border-radius: 10px;
+    padding: 16px;
+    outline: none;
+    width: 100%;
+    transition: border-color 160ms;
+  }
+
+  .nx-input:focus {
+    border-color: var(--color-nx-red);
+  }
+
+  .nx-input[aria-invalid="true"] {
+    border-color: var(--color-nx-red);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Elementos gráficos auxiliares do hero — Brand Book §05.
+   Malha de pontos/linhas, scan vermelho, sweep diagonal, glow inferior.
+--------------------------------------------------------------------------- */
+@keyframes nx-drift {
+  0% {
+    transform: translate3d(-9%, 0, 0) scale(1);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translate3d(9%, -5%, 0) scale(1.22);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(-9%, 0, 0) scale(1);
+    opacity: 0.75;
+  }
+}
+
+@keyframes nx-grid {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(64px);
+  }
+}
+
+@keyframes nx-scan {
+  0% {
+    opacity: 0;
+    transform: translateY(-30%);
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(130%);
+  }
+}
+
+@keyframes nx-sweep {
+  0% {
+    transform: translateX(-120%) skewX(-18deg);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.9;
+  }
+  60% {
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(180%) skewX(-18deg);
+    opacity: 0;
+  }
+}
+
+@keyframes nx-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes nx-halo {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Brand Book §10: respeitar prefers-reduced-motion — cortar transform,
+   manter opacidade. Todo elemento decorativo carrega data-nx-anim. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  [data-nx-anim] {
+    animation: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-property: opacity, color, background-color, border-color !important;
+  }
+}
