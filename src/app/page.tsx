@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { CtaForm } from "@/components/cta-block";
@@ -157,7 +158,14 @@ export default function HomePage() {
             <span className="font-mono text-[11px]/[1] font-medium tracking-[0.2em] text-nx-muted">
               HIGIENIZAÇÃO A DOMICÍLIO · SISTEMA OPERACIONAL
             </span>
-            <p className="mt-5 mb-[14px] font-display text-[30px]/[1.2] font-medium tracking-[-0.01em] text-white">
+            <Image
+              src="/assets/cases/cleanox.webp"
+              alt="Logo Cleanox"
+              width={200}
+              height={200}
+              className="my-6 h-[200px] w-[200px] object-contain"
+            />
+            <p className="mb-[14px] font-display text-[30px]/[1.2] font-medium tracking-[-0.01em] text-white">
               Cleanox
             </p>
             <p className="mb-6 text-[17px]/[1.65] font-light text-nx-muted">
@@ -176,7 +184,14 @@ export default function HomePage() {
             <span className="font-mono text-[11px]/[1] font-medium tracking-[0.2em] text-nx-muted">
               OPERAÇÃO COMERCIAL · CRM
             </span>
-            <p className="mt-5 mb-[14px] font-display text-[30px]/[1.2] font-medium tracking-[-0.01em] text-white">
+            <Image
+              src="/assets/cases/appexcrm.webp"
+              alt="Logo AppexCRM"
+              width={200}
+              height={200}
+              className="my-6 h-[200px] w-[200px] object-contain"
+            />
+            <p className="mb-[14px] font-display text-[30px]/[1.2] font-medium tracking-[-0.01em] text-white">
               AppexCRM
             </p>
             <p className="mb-6 text-[17px]/[1.65] font-light text-nx-muted">
