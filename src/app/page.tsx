@@ -106,7 +106,7 @@ export default function HomePage() {
               Ver soluções
             </Link>
           </div>
-          <p className="mt-11 font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-nx-dim">
+          <p className="mt-11 font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-[#D0D0D0] [text-shadow:0_1px_10px_rgba(0,0,0,0.95),0_0_20px_rgba(0,0,0,0.9)]">
             DO DIAGNÓSTICO AO SISTEMA EM PRODUÇÃO.
           </p>
         </div>

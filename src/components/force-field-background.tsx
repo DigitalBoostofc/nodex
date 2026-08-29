@@ -283,7 +283,8 @@ export function ForceFieldBackground({
             const d = dir.mag();
             if (d < props.magnifierRadius) {
               dir.normalize();
-              dir.mult(props.forceStrength / Math.max(1, d));
+              const falloff = 1 - d / props.magnifierRadius;
+              dir.mult(props.forceStrength * falloff * falloff);
               pt.vel.add(dir);
             }
             pt.vel.mult(props.friction);
@@ -359,8 +360,8 @@ export function ForceFieldBackground({
               props.minStroke,
               props.maxStroke,
             );
-            if (props.magnifierEnabled && d < props.magnifierRadius) {
-              strokeSize *= p.map(d, 0, props.magnifierRadius, 2, 1);
+            if (props.magnifierEnabled && pointerSeen && d < props.magnifierRadius) {
+              strokeSize *= p.map(d, 0, props.magnifierRadius, 2.8, 1);
             }
             const color = palette[shadeIndex];
             if (!color) continue;

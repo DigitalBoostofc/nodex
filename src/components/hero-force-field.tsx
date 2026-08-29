@@ -34,16 +34,16 @@ export function HeroForceField() {
         spacing={9}
         minStroke={0.5}
         maxStroke={4.4}
-        magnifierRadius={200}
-        forceStrength={14}
-        friction={0.88}
-        restoreSpeed={0.055}
+        magnifierRadius={380}
+        forceStrength={32}
+        friction={0.82}
+        restoreSpeed={0.032}
       />
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 46% 28% at 50% 62%, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.48) 40%, transparent 72%)",
+            "radial-gradient(ellipse 52% 46% at 50% 72%, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.55) 42%, transparent 74%)",
         }}
       />
       <div
