@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { CtaForm } from "@/components/cta-block";
 import { FaqSection, type FaqItem } from "@/components/faq";
+import { PieceStage } from "@/components/piece-stage";
 import { HeroBackdrop, HeroPill, Section, SectionHead } from "@/components/ui";
 import { WaLink } from "@/components/wa-link";
 
@@ -14,20 +15,28 @@ export const metadata: Metadata = {
 
 const PIECES = [
   {
+    kicker: "LEITURA",
     title: "Documento",
     text: "Contrato, nota, formulário, PDF. Vira dado estruturado, com confiança por campo.",
+    image: "/assets/automacoes/document.webp",
   },
   {
+    kicker: "REGRA",
     title: "Decisão",
     text: "Triagem, aprovação, fila. Pessoa entra só no ponto que a regra manda.",
+    image: "/assets/automacoes/decision.webp",
   },
   {
+    kicker: "LIGAÇÃO",
     title: "Integração",
     text: "CRM, ERP, planilha, WhatsApp, n8n. A IA entra no fluxo, não ao lado.",
+    image: "/assets/automacoes/integration.webp",
   },
   {
+    kicker: "RASTRO",
     title: "Trilha",
     text: "Quem aprovou, o que o sistema leu, quando. Serve para o dono e para o auditor.",
+    image: "/assets/automacoes/trail.webp",
   },
 ];
 
@@ -108,28 +117,23 @@ export default function AutomacoesPage() {
         </div>
       </section>
 
-      <Section>
-        <SectionHead
-          eyebrow="CAPACIDADES"
-          eyebrowTone="red"
-          title="O que entra numa automação"
-          lead="Quatro peças. Juntas, elas tiram o processo da mão de uma pessoa só."
-          className="mb-12"
+      <section className="relative overflow-hidden border-t border-nx-border-soft">
+        <div
+          aria-hidden
+          data-nx-anim="glow"
+          className="pointer-events-none absolute inset-x-0 top-[45%] h-[420px] -translate-y-1/2 [animation:nx-drift_13s_ease-in-out_infinite] [background:radial-gradient(ellipse_at_50%_50%,rgba(225,6,0,.16),transparent_62%)]"
         />
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-5">
-          {PIECES.map((piece, index) => (
-            <div key={piece.title} className="nx-card nx-card-hover p-[30px]">
-              <span className="font-mono text-[11px]/[1] font-medium tracking-[0.2em] text-nx-red">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <p className="mt-[18px] mb-3 font-display text-[20px]/[1.3] font-medium text-white">
-                {piece.title}
-              </p>
-              <p className="nx-body">{piece.text}</p>
-            </div>
-          ))}
+        <div className="relative mx-auto max-w-[1280px] px-5 py-24 md:px-8 lg:px-12">
+          <SectionHead
+            eyebrow="CAPACIDADES"
+            eyebrowTone="red"
+            title="O que entra numa automação"
+            lead="Quatro peças. Juntas, elas tiram o processo da mão de uma pessoa só."
+            className="mb-12"
+          />
+          <PieceStage items={PIECES} />
         </div>
-      </Section>
+      </section>
 
       <Section>
         <SectionHead
