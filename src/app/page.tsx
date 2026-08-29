@@ -85,7 +85,7 @@ export default function HomePage() {
     <>
       <section className="relative overflow-hidden">
         <HeroBackdrop glowStrength={0.5} />
-        <div className="relative mx-auto max-w-[1280px] px-5 pt-28 pb-28 text-center md:px-8 md:pt-35 lg:px-12">
+        <div className="relative mx-auto max-w-[1280px] px-5 pt-12 pb-28 text-center md:px-8 md:pt-35 lg:px-12">
           <span className="nx-label tracking-[0.22em]">NODEX LABS</span>
           <div className="mt-[22px] flex justify-center">
             <HeroPill pulsing>SISTEMAS · CHATBOTS · AUTOMAÇÃO</HeroPill>
