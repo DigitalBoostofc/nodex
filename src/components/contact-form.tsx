@@ -2,32 +2,59 @@
 
 import { useState } from "react";
 
-const INTERESTS = [
-  { value: "chatbot", label: "Chatbot" },
-  { value: "automacao", label: "Automação" },
-  { value: "sistema", label: "Sistema" },
+const SERVICES = [
+  { value: "sistemas", label: "Sistemas" },
+  { value: "chatbots", label: "Chatbots" },
+  { value: "automacoes", label: "Automações" },
+  { value: "site", label: "Site institucional" },
   { value: "naosei", label: "Ainda não sei" },
+] as const;
+
+const BUDGETS = [
+  { value: "indefinido", label: "Não tenho valor definido" },
+  { value: "ate-10", label: "Até R$ 10.000" },
+  { value: "10-25", label: "R$ 10.000 a R$ 25.000" },
+  { value: "25-50", label: "R$ 25.000 a R$ 50.000" },
+  { value: "50-100", label: "R$ 50.000 a R$ 100.000" },
+  { value: "acima-100", label: "Acima de R$ 100.000" },
 ] as const;
 
 type Status = "editing" | "sending" | "sent" | "error";
 
+function Field({
+  label,
+  optional = false,
+  children,
+}: {
+  label: string;
+  optional?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="flex flex-col gap-2">
+      <span className="font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-nx-muted">
+        {label}
+        {optional ? <span className="text-nx-dim"> (OPCIONAL)</span> : null}
+      </span>
+      {children}
+    </label>
+  );
+}
+
 /**
  * Formulário de contato.
  *
- * `compact` é a versão dos blocos de CTA: três campos, que é o teto que o
- * Brand Book §09 define para o CTA final. A versão completa, da página de
- * contato, acrescenta empresa e interesse.
+ * Campos alinhados ao briefing de captura: nome, empresa, e-mail, WhatsApp,
+ * serviço, investimento e mensagem.
  */
 export function ContactForm({ compact = false }: { compact?: boolean }) {
   const [status, setStatus] = useState<Status>("editing");
-  const [interest, setInterest] = useState<string | null>(null);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("sending");
 
     const data = new FormData(event.currentTarget);
-    if (interest) data.set("interesse", interest);
 
     try {
       const response = await fetch("/api/contato", {
@@ -51,10 +78,7 @@ export function ContactForm({ compact = false }: { compact?: boolean }) {
         <p className="nx-body">Sem sequência de e-mail. Resposta humana.</p>
         <button
           type="button"
-          onClick={() => {
-            setStatus("editing");
-            setInterest(null);
-          }}
+          onClick={() => setStatus("editing")}
           className="mt-2 cursor-pointer text-left text-[14px]/[1] font-medium text-nx-red hover:text-white"
         >
           Enviar outra mensagem →
@@ -65,89 +89,90 @@ export function ContactForm({ compact = false }: { compact?: boolean }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
-      <label className="flex flex-col gap-2">
-        <span className="font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-nx-muted">
-          NOME
-        </span>
+      <Field label="NOME">
         <input
           type="text"
           name="nome"
           required
           autoComplete="name"
-          placeholder="Seu nome"
+          placeholder="Digite seu nome"
           className="nx-input"
         />
-      </label>
+      </Field>
 
-      <label className="flex flex-col gap-2">
-        <span className="font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-nx-muted">
-          E-MAIL
-        </span>
+      <Field label="EMPRESA" optional>
+        <input
+          type="text"
+          name="empresa"
+          autoComplete="organization"
+          placeholder="Digite o nome da empresa"
+          className="nx-input"
+        />
+      </Field>
+
+      <Field label="E-MAIL">
         <input
           type="email"
           name="email"
           required
           autoComplete="email"
-          placeholder="voce@empresa.com"
+          placeholder="Informe um e-mail válido para contato"
           className="nx-input"
         />
-      </label>
+      </Field>
 
-      {compact ? null : (
-        <label className="flex flex-col gap-2">
-          <span className="font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-nx-muted">
-            EMPRESA <span className="text-nx-dim">(OPCIONAL)</span>
-          </span>
-          <input
-            type="text"
-            name="empresa"
-            autoComplete="organization"
-            placeholder="Nome da empresa"
-            className="nx-input"
-          />
-        </label>
-      )}
-
-      <label className="flex flex-col gap-2">
-        <span className="font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-nx-muted">
-          DESAFIO EM UMA FRASE
-        </span>
-        <textarea
-          name="desafio"
-          rows={3}
+      <Field label="WHATSAPP">
+        <input
+          type="tel"
+          name="whatsapp"
           required
-          placeholder="Ex.: nosso atendimento não escala."
+          autoComplete="tel"
+          inputMode="tel"
+          placeholder="Digite seu WhatsApp"
+          className="nx-input"
+        />
+      </Field>
+
+      <Field label="SERVIÇO">
+        <select name="servico" required defaultValue="" className="nx-input nx-select">
+          <option value="" disabled>
+            Selecione o serviço
+          </option>
+          {SERVICES.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </Field>
+
+      <Field label="QUANTO PRETENDE INVESTIR?">
+        <select
+          name="investimento"
+          required
+          defaultValue=""
+          className="nx-input nx-select"
+        >
+          <option value="" disabled>
+            Selecione uma faixa
+          </option>
+          {BUDGETS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </Field>
+
+      <Field label="MENSAGEM">
+        <textarea
+          name="mensagem"
+          rows={compact ? 3 : 4}
+          required
+          placeholder="Descreva seu projeto e o que precisa ser feito"
           className="nx-input resize-none"
         />
-      </label>
-
-      {compact ? null : (
-        <div className="flex flex-col gap-[10px]">
-          <span className="font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-nx-muted">
-            INTERESSE
-          </span>
-          <div className="flex flex-wrap gap-[10px]">
-            {INTERESTS.map((option) => {
-              const active = interest === option.value;
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => setInterest(active ? null : option.value)}
-                  className={`cursor-pointer rounded-[4px] border px-[14px] py-[11px] font-mono text-[12px]/[1] font-medium tracking-[0.14em] uppercase transition-all duration-160 ${
-                    active
-                      ? "border-nx-red bg-nx-red text-white"
-                      : "border-[#262626] bg-transparent text-nx-text-2"
-                  }`}
-                >
-                  {option.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      </Field>
 
       <button
         type="submit"

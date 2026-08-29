@@ -14,13 +14,15 @@ export async function POST(request: Request) {
 
   const nome = String(form.get("nome") ?? "").trim();
   const email = String(form.get("email") ?? "").trim();
-  const desafio = String(form.get("desafio") ?? "").trim();
+  const whatsapp = String(form.get("whatsapp") ?? "").trim();
+  const servico = String(form.get("servico") ?? "").trim();
+  const investimento = String(form.get("investimento") ?? "").trim();
+  const mensagem = String(form.get("mensagem") ?? "").trim();
   const empresa = String(form.get("empresa") ?? "").trim();
-  const interesse = String(form.get("interesse") ?? "").trim();
 
-  if (!nome || !email || !desafio) {
+  if (!nome || !email || !whatsapp || !servico || !investimento || !mensagem) {
     return NextResponse.json(
-      { error: "Nome, e-mail e desafio são obrigatórios." },
+      { error: "Preencha nome, e-mail, WhatsApp, serviço, investimento e mensagem." },
       { status: 400 },
     );
   }
@@ -28,9 +30,11 @@ export async function POST(request: Request) {
   console.info("[contato] nova mensagem", {
     nome,
     email,
+    whatsapp,
     empresa: empresa || null,
-    interesse: interesse || null,
-    desafio,
+    servico,
+    investimento,
+    mensagem,
   });
 
   return NextResponse.json({ ok: true });
