@@ -7,6 +7,10 @@ const SERVICES = [
   { value: "chatbots", label: "Chatbots" },
   { value: "automacoes", label: "Automações" },
   { value: "site", label: "Site institucional" },
+  { value: "landing", label: "Landing page" },
+  { value: "aplicativos", label: "Aplicativos" },
+  { value: "saas", label: "SaaS" },
+  { value: "infraestrutura", label: "Infraestrutura" },
   { value: "naosei", label: "Ainda não sei" },
 ] as const;
 
