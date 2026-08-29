@@ -6,10 +6,15 @@ const CYCLE_MS = 2600;
 const HEADER_PX = 68;
 const MD_QUERY = "(min-width: 768px)";
 const REDUCE_QUERY = "(prefers-reduced-motion: reduce)";
-const SNAP_MS = 640;
-const SNAP_EASE = "cubic-bezier(0.2, 0.8, 0.2, 1)";
+const SNAP_MS = 980;
+const RELEASE_MS = 1320;
+const SNAP_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 const SNAP_THRESHOLD = 36;
 const PIN_EXTRA = 80;
+
+function easeOutQuint(t: number) {
+  return 1 - (1 - t) ** 5;
+}
 
 /**
  * Percorre os passos sozinho para que a etapa em destaque se explique sem
@@ -62,12 +67,12 @@ export function StepTrack({
     >
       <div
         data-nx-track-fill
-        className="absolute top-0 left-0 h-px transition-[width] duration-[640ms] ease-[cubic-bezier(.2,.8,.2,1)] [background:linear-gradient(90deg,#8E0000,#E10600)]"
+        className="absolute top-0 left-0 h-px transition-[width] duration-[980ms] ease-[cubic-bezier(.22,1,.36,1)] [background:linear-gradient(90deg,#8E0000,#E10600)]"
         style={{ width: fill }}
       />
       <div
         data-nx-track-dot
-        className="absolute top-1/2 h-[11px] w-[11px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-nx-red transition-[left] duration-[640ms] ease-[cubic-bezier(.2,.8,.2,1)] [box-shadow:0_0_0_4px_rgba(225,6,0,.18)]"
+        className="absolute top-1/2 h-[11px] w-[11px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-nx-red transition-[left] duration-[980ms] ease-[cubic-bezier(.22,1,.36,1)] [box-shadow:0_0_0_4px_rgba(225,6,0,.18)]"
         style={{ left: dot }}
       />
     </div>
@@ -129,7 +134,9 @@ export function StepList({
     const dot = pin.querySelector<HTMLElement>("[data-nx-track-dot]");
     let index = 0;
     let animating = false;
+    let releasing = false;
     let unlock: number | undefined;
+    let scrollRaf = 0;
     let touchY = 0;
     let touchX = 0;
     let gestureLocked = false;
@@ -145,12 +152,17 @@ export function StepList({
     const paint = (next: number, animate: boolean) => {
       index = Math.max(0, Math.min(total - 1, next));
       const x = -index * slideW();
-      strip.style.transition = animate
-        ? `transform ${SNAP_MS}ms ${SNAP_EASE}`
-        : "none";
+      const motion = animate ? `${SNAP_MS}ms ${SNAP_EASE}` : "none";
+      strip.style.transition = animate ? `transform ${motion}` : "none";
       strip.style.transform = `translate3d(${x}px,0,0)`;
-      if (fill) fill.style.width = `${((index + 1) / total) * 100}%`;
-      if (dot) dot.style.left = `${((index + 0.5) / total) * 100}%`;
+      if (fill) {
+        fill.style.transition = animate ? `width ${motion}` : "none";
+        fill.style.width = `${((index + 1) / total) * 100}%`;
+      }
+      if (dot) {
+        dot.style.transition = animate ? `left ${motion}` : "none";
+        dot.style.left = `${((index + 0.5) / total) * 100}%`;
+      }
       for (let i = 0; i < strip.children.length; i++) {
         const item = strip.children[i];
         if (i === index) item.setAttribute("aria-current", "step");
@@ -159,7 +171,7 @@ export function StepList({
     };
 
     const goTo = (next: number) => {
-      if (next === index || animating) return;
+      if (next === index || animating || releasing) return;
       animating = true;
       paint(next, true);
       window.clearTimeout(unlock);
@@ -174,13 +186,44 @@ export function StepList({
       paint(index, false);
     };
 
+    const animateScroll = (to: number, duration: number, done: () => void) => {
+      const html = document.documentElement;
+      const previous = html.style.scrollBehavior;
+      html.style.scrollBehavior = "auto";
+      const from = window.scrollY;
+      const delta = to - from;
+      let origin: number | null = null;
+      const step = (now: number) => {
+        if (origin == null) origin = now;
+        const t = Math.min(1, (now - origin) / duration);
+        window.scrollTo(0, from + delta * easeOutQuint(t));
+        if (t < 1) {
+          scrollRaf = requestAnimationFrame(step);
+          return;
+        }
+        html.style.scrollBehavior = previous;
+        done();
+      };
+      scrollRaf = requestAnimationFrame(step);
+    };
+
     const releaseDown = () => {
+      if (releasing) return;
+      releasing = true;
+      animating = true;
       const dest =
         window.scrollY + pin.getBoundingClientRect().bottom - HEADER_PX;
-      window.scrollTo({ top: dest, behavior: "smooth" });
+      animateScroll(dest, RELEASE_MS, () => {
+        releasing = false;
+        animating = false;
+      });
     };
 
     const onWheel = (event: WheelEvent) => {
+      if (releasing) {
+        event.preventDefault();
+        return;
+      }
       if (!pinned()) return;
       if (animating) {
         event.preventDefault();
@@ -205,6 +248,10 @@ export function StepList({
     };
 
     const onTouchMove = (event: TouchEvent) => {
+      if (releasing) {
+        event.preventDefault();
+        return;
+      }
       if (!pinned()) return;
       if (animating) {
         event.preventDefault();
@@ -236,6 +283,7 @@ export function StepList({
     };
 
     const onScroll = () => {
+      if (releasing) return;
       const rect = pin.getBoundingClientRect();
       if (rect.top > window.innerHeight) {
         if (index !== 0) paint(0, false);
@@ -259,6 +307,7 @@ export function StepList({
     window.addEventListener("resize", layout, { passive: true });
     return () => {
       window.clearTimeout(unlock);
+      cancelAnimationFrame(scrollRaf);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
