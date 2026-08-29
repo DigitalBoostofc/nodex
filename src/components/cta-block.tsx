@@ -26,14 +26,14 @@ export function CtaForm({
           >
             {lead}
           </p>
-          <div className="mt-8 hidden flex-1 items-center lg:flex">
+          <div className="mt-8 hidden flex-1 items-center justify-center lg:flex">
             <img
               src="/assets/symbol.svg"
               alt=""
               aria-hidden
               width={480}
               height={313}
-              className="pointer-events-none w-full max-w-[480px] -translate-y-10"
+              className="pointer-events-none mx-auto w-full max-w-[480px] -translate-y-10"
             />
           </div>
         </div>
