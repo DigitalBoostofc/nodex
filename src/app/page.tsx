@@ -5,7 +5,8 @@ import { CtaForm } from "@/components/cta-block";
 import { FaqSection, type FaqItem } from "@/components/faq";
 import { ProblemRail } from "@/components/problem-rail";
 import { StepList, type Step } from "@/components/step-track";
-import { HeroBackdrop, HeroPill, Section, SectionHead } from "@/components/ui";
+import { HeroForceField } from "@/components/hero-force-field";
+import { HeroPill, Section, SectionHead } from "@/components/ui";
 import { WaLink } from "@/components/wa-link";
 
 const PROBLEMS = [
@@ -84,8 +85,8 @@ export default function HomePage() {
   return (
     <>
       <section className="relative overflow-hidden">
-        <HeroBackdrop glowStrength={0.5} />
-        <div className="relative mx-auto max-w-[1280px] px-5 pt-12 pb-28 text-center md:px-8 md:pt-35 lg:px-12">
+        <HeroForceField />
+        <div className="pointer-events-none relative z-10 mx-auto max-w-[1280px] px-5 pt-12 pb-28 text-center md:px-8 md:pt-35 lg:px-12">
           <span className="nx-label tracking-[0.22em]">NODEX LABS</span>
           <div className="mt-[22px] flex justify-center">
             <HeroPill pulsing>SISTEMAS · CHATBOTS · AUTOMAÇÃO</HeroPill>
@@ -99,7 +100,7 @@ export default function HomePage() {
             integrados ao processo que você já opera. Do primeiro diagnóstico à
             manutenção depois de ir ao ar.
           </p>
-          <div className="mt-11 flex flex-wrap justify-center gap-[14px]">
+          <div className="pointer-events-auto mt-11 flex flex-wrap justify-center gap-[14px]">
             <WaLink className="nx-btn nx-btn-pill">Fale com a Nodex →</WaLink>
             <Link href="/solucoes" className="nx-btn-ghost nx-btn-ghost-pill">
               Ver soluções
