@@ -391,6 +391,33 @@
   }
 }
 
+@keyframes nx-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes nx-flow-y {
+  0% {
+    top: -12%;
+    opacity: 0;
+  }
+  14% {
+    opacity: 1;
+  }
+  86% {
+    opacity: 1;
+  }
+  100% {
+    top: 104%;
+    opacity: 0;
+  }
+}
+
 /* Brand Book §10: respeitar prefers-reduced-motion — cortar transform,
    manter opacidade. Todo elemento decorativo carrega data-nx-anim. */
 @media (prefers-reduced-motion: reduce) {
