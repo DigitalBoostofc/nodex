@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { CtaForm } from "@/components/cta-block";
+import {
+  MarkBase,
+  MarkChat,
+  MarkRepeat,
+} from "@/components/chatbot-marks";
 import { FaqSection, type FaqItem } from "@/components/faq";
 import { StepList, type Step } from "@/components/step-track";
 import { HeroBackdrop, HeroPill, Section, SectionHead } from "@/components/ui";
@@ -17,14 +22,17 @@ const AUDIENCE = [
   {
     label: "WhatsApp",
     text: "Empresa que atende pelo WhatsApp e perde recado.",
+    Icon: MarkChat,
   },
   {
     label: "Pergunta repetida",
     text: "Time que responde catálogo, prazo e status o dia todo.",
+    Icon: MarkRepeat,
   },
   {
     label: "Base própria",
     text: "Operação que já tem FAQ e precisa que o bot use isso, não chute.",
+    Icon: MarkBase,
   },
 ];
 
@@ -122,18 +130,21 @@ export default function ChatbotsPage() {
           lead="Três situações em que o chatbot devolve horas para o time, sem gerar trabalho novo."
           className="mb-11"
         />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
-          {AUDIENCE.map((item, index) => (
-            <div key={item.label} className="nx-card nx-card-hover p-6 md:p-[30px]">
-              <span className="font-mono text-[11px]/[1] font-medium tracking-[0.2em] text-nx-red">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <p className="mt-4 mb-3 font-display text-[20px]/[1.3] font-medium text-white">
-                {item.label}
-              </p>
-              <p className="text-[16px]/[1.6] font-light text-nx-muted md:text-[17px]/[1.6]">
-                {item.text}
-              </p>
+        <div className="grid grid-cols-1 divide-y divide-nx-border md:grid-cols-3 md:divide-x md:divide-y-0">
+          {AUDIENCE.map((item) => (
+            <div
+              key={item.label}
+              className="flex gap-5 py-8 first:pt-0 last:pb-0 md:flex-col md:px-8 md:py-0 md:first:pl-0 md:last:pr-0"
+            >
+              <item.Icon className="h-14 w-14 shrink-0 md:h-16 md:w-16" />
+              <div>
+                <p className="mb-2 font-display text-[20px]/[1.3] font-medium text-white">
+                  {item.label}
+                </p>
+                <p className="text-[16px]/[1.6] font-light text-nx-muted md:text-[17px]/[1.6]">
+                  {item.text}
+                </p>
+              </div>
             </div>
           ))}
         </div>
@@ -147,19 +158,22 @@ export default function ChatbotsPage() {
           lead="Cada chatbot que entregamos sabe buscar na sua base, extrair dado e escalar sem drama."
           className="mb-12"
         />
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-5">
+        <ol className="grid grid-cols-1 gap-x-16 gap-y-12 md:grid-cols-2">
           {CAPABILITIES.map((item, index) => (
-            <div key={item.title} className="nx-card nx-card-hover p-[30px]">
-              <span className="font-mono text-[11px]/[1] font-medium tracking-[0.2em] text-nx-red">
+            <li key={item.title} className="relative pl-[72px]">
+              <span
+                aria-hidden
+                className="absolute top-[-8px] left-0 font-display text-[44px]/[1] font-light text-nx-red"
+              >
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <p className="mt-[18px] mb-3 font-display text-[20px]/[1.3] font-medium text-white">
+              <p className="mb-3 font-display text-[20px]/[1.3] font-medium text-white">
                 {item.title}
               </p>
-              <p className="nx-body">{item.text}</p>
-            </div>
+              <p className="nx-body max-w-[42ch]">{item.text}</p>
+            </li>
           ))}
-        </div>
+        </ol>
       </Section>
 
       <Section>
@@ -169,29 +183,31 @@ export default function ChatbotsPage() {
           lead="O mesmo cérebro treinado nas superfícies onde a conversa acontece, sem reescrever por canal."
           className="mb-12"
         />
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-5">
+        <ul className="border-t border-nx-border">
           {CHANNELS.map((channel) => (
-            <div
+            <li
               key={channel.name}
-              className={
-                channel.primary
-                  ? "rounded-[14px] border border-nx-border-warm bg-nx-surface p-[30px]"
-                  : "nx-card nx-card-hover p-[30px]"
-              }
+              className="flex flex-col gap-2 border-b border-nx-border py-7 sm:flex-row sm:items-baseline sm:justify-between sm:gap-8"
             >
-              <p className="mb-[10px] font-display text-[20px]/[1.3] font-medium text-white">
+              <p
+                className={`font-display font-medium tracking-[-0.02em] ${
+                  channel.primary
+                    ? "text-[32px]/[1.1] text-white md:text-[40px]/[1.1]"
+                    : "text-[22px]/[1.2] text-nx-text-2"
+                }`}
+              >
                 {channel.name}
               </p>
               <p
-                className={`font-mono text-[13px]/[1.6] ${
-                  channel.primary ? "text-nx-red" : "text-nx-muted"
+                className={`font-mono text-[12px]/[1] font-medium tracking-[0.18em] ${
+                  channel.primary ? "text-nx-red" : "text-nx-dim"
                 }`}
               >
                 {channel.note}
               </p>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </Section>
 
       <Section>
