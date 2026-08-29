@@ -207,20 +207,23 @@ export function ForceFieldBackground({
           layer.pixelDensity(1);
           layer.background(0);
 
-          const maxW = p.width * 0.82;
-          const maxH = p.height * 0.7;
-          const scale = Math.min(
-            maxW / originalImg.width,
-            maxH / originalImg.height,
-          );
-          const drawW = originalImg.width * scale;
-          const drawH = originalImg.height * scale;
+          const sx = originalImg.width * 0.1;
+          const sy = originalImg.height * 0.08;
+          const sw = originalImg.width * 0.8;
+          const sh = originalImg.height * 0.84;
+          const cover = Math.max(p.width / sw, p.height / sh) * 1.2;
+          const drawW = sw * cover;
+          const drawH = sh * cover;
           layer.image(
             originalImg,
             (p.width - drawW) / 2,
-            (p.height - drawH) / 2 - p.height * 0.08,
+            (p.height - drawH) / 2,
             drawW,
             drawH,
+            sx,
+            sy,
+            sw,
+            sh,
           );
 
           img = layer.get();
@@ -328,18 +331,27 @@ export function ForceFieldBackground({
             const brightness = img.pixels[index];
             if (brightness === undefined) continue;
 
-            const visible = props.invertWireframe
-              ? brightness < props.threshold
-              : brightness > props.threshold;
+            const fillField = !props.invertWireframe && props.threshold <= 0;
+            const visible = fillField
+              ? true
+              : props.invertWireframe
+                ? brightness < props.threshold
+                : brightness > props.threshold;
             if (!visible) continue;
 
-            const shadeIndex = p.constrain(
-              Math.floor(
-                p.map(brightness, 0, 255, 0, palette.length - 1),
-              ),
-              0,
-              palette.length - 1,
-            );
+            const shadeIndex = fillField
+              ? p.constrain(
+                  Math.floor(p.map(brightness, 0, 255, 5, 1)),
+                  1,
+                  5,
+                )
+              : p.constrain(
+                  Math.floor(
+                    p.map(brightness, 0, 255, 0, palette.length - 1),
+                  ),
+                  0,
+                  palette.length - 1,
+                );
             let strokeSize = p.map(
               brightness,
               0,

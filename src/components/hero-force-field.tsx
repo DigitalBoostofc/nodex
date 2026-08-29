@@ -28,10 +28,13 @@ export function HeroForceField() {
     <div className="absolute inset-0 z-0" aria-hidden>
       <ForceFieldBackground
         imageUrl="/assets/symbol-on-black.png"
-        spacing={10}
-        minStroke={1.2}
-        maxStroke={4}
-        magnifierRadius={180}
+        invertImage={false}
+        invertWireframe={false}
+        threshold={0}
+        spacing={9}
+        minStroke={0.5}
+        maxStroke={4.4}
+        magnifierRadius={200}
         forceStrength={14}
         friction={0.88}
         restoreSpeed={0.055}
@@ -40,7 +43,7 @@ export function HeroForceField() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 72% 30% at 50% 64%, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.5) 40%, transparent 74%)",
+            "radial-gradient(ellipse 46% 28% at 50% 62%, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.48) 40%, transparent 72%)",
         }}
       />
       <div
