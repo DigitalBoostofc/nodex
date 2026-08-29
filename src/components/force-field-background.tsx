@@ -361,7 +361,7 @@ export function ForceFieldBackground({
               props.maxStroke,
             );
             if (props.magnifierEnabled && pointerSeen && d < props.magnifierRadius) {
-              strokeSize *= p.map(d, 0, props.magnifierRadius, 2.8, 1);
+              strokeSize *= p.map(d, 0, props.magnifierRadius, 2.2, 1);
             }
             const color = palette[shadeIndex];
             if (!color) continue;
