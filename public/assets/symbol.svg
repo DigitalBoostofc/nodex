@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 228" fill="none">
+  <!-- X: two parallelograms. Darker stroke behind, brand red on top. -->
+  <polygon
+    fill="#B1050C"
+    points="140,51 192,51 318,198 266,198"
+  />
+  <polygon
+    fill="#E10600"
+    points="251,51 303,51 178,198 126,198"
+  />
+  <!-- N, painted over the X like the original lockup -->
+  <polygon
+    fill="#F4F4F4"
+    points="52,51 95,51 219,197 170,197 86,99 86,197 52,197"
+  />
+</svg>

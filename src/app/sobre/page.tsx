@@ -89,13 +89,13 @@ export default function SobrePage() {
               entrega sistemas, automações e chatbots em produção.
             </p>
           </div>
-          <Image
-            src="/assets/symbol-on-black.png"
+          <img
+            src="/assets/symbol.svg"
             alt=""
             aria-hidden
             width={520}
-            height={520}
-            className="pointer-events-none block h-auto w-full max-w-[520px] justify-self-end opacity-90 mix-blend-screen"
+            height={339}
+            className="pointer-events-none block h-auto w-full max-w-[520px] justify-self-end"
           />
         </div>
       </section>
