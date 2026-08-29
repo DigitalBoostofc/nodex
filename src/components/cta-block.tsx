@@ -17,8 +17,8 @@ export function CtaForm({
   return (
     <section className="relative overflow-hidden border-t border-nx-border-soft">
       <CtaGlow at="30%" strength={0.3} />
-      <div className="relative mx-auto grid max-w-[1280px] grid-cols-[repeat(auto-fit,minmax(320px,1fr))] items-start gap-14 px-5 py-28 md:px-8 lg:px-12">
-        <div>
+      <div className="relative mx-auto grid max-w-[1280px] grid-cols-1 items-start gap-14 px-5 py-28 md:px-8 lg:grid-cols-2 lg:items-stretch lg:px-12">
+        <div className="flex flex-col">
           <h2 className="nx-h2 mb-[18px] max-w-[22ch] leading-[1.15]">
             {title}
           </h2>
@@ -34,6 +34,14 @@ export function CtaForm({
               </a>
             </span>
           </div>
+          <img
+            src="/assets/symbol.svg"
+            alt=""
+            aria-hidden
+            width={480}
+            height={313}
+            className="pointer-events-none mt-auto hidden w-full max-w-[480px] pt-16 lg:block"
+          />
         </div>
         <div className="nx-card nx-card-hover p-8">
           <ContactForm compact />
