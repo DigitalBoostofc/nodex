@@ -418,6 +418,41 @@
   }
 }
 
+/* Luz que tenta atravessar o trilho e emperra — usada na seção de problemas. */
+@keyframes nx-stall {
+  0% {
+    left: 0%;
+    opacity: 0;
+  }
+  14% {
+    opacity: 1;
+  }
+  40% {
+    left: 62%;
+  }
+  46% {
+    left: 54%;
+  }
+  54% {
+    left: 65%;
+  }
+  62% {
+    left: 57%;
+  }
+  74% {
+    left: 61%;
+    opacity: 1;
+  }
+  88% {
+    left: 58%;
+    opacity: 0;
+  }
+  100% {
+    left: 0%;
+    opacity: 0;
+  }
+}
+
 /* Brand Book §10: respeitar prefers-reduced-motion — cortar transform,
    manter opacidade. Todo elemento decorativo carrega data-nx-anim. */
 @media (prefers-reduced-motion: reduce) {
