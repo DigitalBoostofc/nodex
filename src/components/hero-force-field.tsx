@@ -37,6 +37,13 @@ export function HeroForceField() {
         restoreSpeed={0.055}
       />
       <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 72% 30% at 50% 64%, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.5) 40%, transparent 74%)",
+        }}
+      />
+      <div
         className="pointer-events-none absolute inset-x-0 -bottom-[240px] h-[520px]"
         style={{
           background:

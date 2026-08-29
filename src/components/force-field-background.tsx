@@ -208,7 +208,7 @@ export function ForceFieldBackground({
           layer.background(0);
 
           const maxW = p.width * 0.82;
-          const maxH = p.height * 0.78;
+          const maxH = p.height * 0.7;
           const scale = Math.min(
             maxW / originalImg.width,
             maxH / originalImg.height,
@@ -218,7 +218,7 @@ export function ForceFieldBackground({
           layer.image(
             originalImg,
             (p.width - drawW) / 2,
-            (p.height - drawH) / 2,
+            (p.height - drawH) / 2 - p.height * 0.08,
             drawW,
             drawH,
           );
