@@ -126,13 +126,7 @@ export function ProblemRail({ items }: { items: readonly Problem[] }) {
                 <div
                   data-nx-anim="float"
                   className="relative [animation:nx-float_5.6s_ease-in-out_infinite]"
-                  style={{
-                    animationDelay: `${index * 0.7}s`,
-                    WebkitMaskImage:
-                      "radial-gradient(circle at center, #000 74%, transparent 97%)",
-                    maskImage:
-                      "radial-gradient(circle at center, #000 74%, transparent 97%)",
-                  }}
+                  style={{ animationDelay: `${index * 0.7}s` }}
                 >
                   <Image
                     src={problem.image}
@@ -141,7 +135,7 @@ export function ProblemRail({ items }: { items: readonly Problem[] }) {
                     height={800}
                     unoptimized
                     loading="eager"
-                    className="relative h-auto w-full mix-blend-screen transition-transform duration-500 ease-[cubic-bezier(.2,.8,.2,1)] group-hover:scale-[1.05]"
+                    className="relative h-auto w-full transition-transform duration-500 ease-[cubic-bezier(.2,.8,.2,1)] group-hover:scale-[1.05]"
                   />
                 </div>
               </figure>
