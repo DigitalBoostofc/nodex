@@ -114,17 +114,9 @@ export default function HomePage() {
       <section className="relative overflow-hidden border-t border-nx-border-soft">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 overflow-hidden [mask-image:radial-gradient(ellipse_at_50%_40%,#000_28%,transparent_78%)]"
-        >
-          <div
-            data-nx-anim="grid"
-            className="absolute -inset-x-10 -inset-y-20 opacity-35 [animation:nx-grid_8s_linear_infinite] [background-image:linear-gradient(#242424_1px,transparent_1px),linear-gradient(90deg,#242424_1px,transparent_1px)] [background-size:64px_64px]"
-          />
-          <div
-            data-nx-anim="glow"
-            className="absolute inset-x-0 top-[42%] h-[420px] -translate-y-1/2 [animation:nx-drift_13s_ease-in-out_infinite] [background:radial-gradient(ellipse_at_50%_50%,rgba(225,6,0,.16),transparent_62%)]"
-          />
-        </div>
+          data-nx-anim="glow"
+          className="pointer-events-none absolute inset-x-0 top-[42%] h-[420px] -translate-y-1/2 [animation:nx-drift_13s_ease-in-out_infinite] [background:radial-gradient(ellipse_at_50%_50%,rgba(225,6,0,.16),transparent_62%)]"
+        />
         <div className="relative mx-auto max-w-[1280px] px-5 py-24 md:px-8 lg:px-12">
           <SectionHead
             eyebrow="O QUE TRAVA A OPERAÇÃO"
