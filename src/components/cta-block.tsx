@@ -33,7 +33,7 @@ export function CtaForm({
               aria-hidden
               width={480}
               height={313}
-              className="pointer-events-none mx-auto w-full max-w-[480px] -translate-y-16 translate-x-10"
+              className="pointer-events-none mx-auto w-full max-w-[480px] -translate-y-20 translate-x-5"
             />
           </div>
         </div>
