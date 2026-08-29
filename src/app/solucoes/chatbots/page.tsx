@@ -14,9 +14,21 @@ export const metadata: Metadata = {
 };
 
 const AUDIENCE = [
-  "Empresa que atende pelo WhatsApp e perde recado.",
-  "Time que responde catálogo, prazo e status o dia todo.",
-  "Operação que já tem FAQ e precisa que o bot use isso, não chute.",
+  {
+    name: "WhatsApp",
+    note: "EMPRESA QUE ATENDE E PERDE RECADO",
+    primary: true,
+  },
+  {
+    name: "Pergunta repetida",
+    note: "CATÁLOGO, PRAZO E STATUS O DIA TODO",
+    primary: false,
+  },
+  {
+    name: "Base própria",
+    note: "FAQ QUE O BOT USA, NÃO CHUTA",
+    primary: false,
+  },
 ];
 
 const CAPABILITIES = [
@@ -113,14 +125,27 @@ export default function ChatbotsPage() {
           lead="Três situações em que o chatbot devolve horas para o time, sem gerar trabalho novo."
           className="mb-11"
         />
-        <div className="nx-grid-hairline grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
-          {AUDIENCE.map((line) => (
-            <p
-              key={line}
-              className="p-[30px] text-[18px]/[1.55] font-light text-nx-text-2"
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-5">
+          {AUDIENCE.map((item) => (
+            <div
+              key={item.name}
+              className={
+                item.primary
+                  ? "rounded-[14px] border border-nx-border-warm bg-nx-surface p-[30px]"
+                  : "nx-card nx-card-hover p-[30px]"
+              }
             >
-              {line}
-            </p>
+              <p className="mb-[10px] font-display text-[20px]/[1.3] font-medium text-white">
+                {item.name}
+              </p>
+              <p
+                className={`font-mono text-[13px]/[1.6] ${
+                  item.primary ? "text-nx-red" : "text-nx-muted"
+                }`}
+              >
+                {item.note}
+              </p>
+            </div>
           ))}
         </div>
       </Section>
