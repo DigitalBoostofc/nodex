@@ -1,17 +1,15 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type ReactNode,
-} from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 const CYCLE_MS = 2600;
 const HEADER_PX = 68;
 const MD_QUERY = "(min-width: 768px)";
 const REDUCE_QUERY = "(prefers-reduced-motion: reduce)";
+const SNAP_MS = 640;
+const SNAP_EASE = "cubic-bezier(0.2, 0.8, 0.2, 1)";
+const SNAP_THRESHOLD = 36;
+const PIN_EXTRA = 80;
 
 /**
  * Percorre os passos sozinho para que a etapa em destaque se explique sem
@@ -64,12 +62,12 @@ export function StepTrack({
     >
       <div
         data-nx-track-fill
-        className="absolute top-0 left-0 h-px transition-[width] duration-[640ms] ease-[cubic-bezier(.2,.8,.2,1)] [background:linear-gradient(90deg,#8E0000,#E10600)] max-md:transition-none"
+        className="absolute top-0 left-0 h-px transition-[width] duration-[640ms] ease-[cubic-bezier(.2,.8,.2,1)] [background:linear-gradient(90deg,#8E0000,#E10600)]"
         style={{ width: fill }}
       />
       <div
         data-nx-track-dot
-        className="absolute top-1/2 h-[11px] w-[11px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-nx-red transition-[left] duration-[640ms] ease-[cubic-bezier(.2,.8,.2,1)] [box-shadow:0_0_0_4px_rgba(225,6,0,.18)] max-md:transition-none"
+        className="absolute top-1/2 h-[11px] w-[11px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-nx-red transition-[left] duration-[640ms] ease-[cubic-bezier(.2,.8,.2,1)] [box-shadow:0_0_0_4px_rgba(225,6,0,.18)]"
         style={{ left: dot }}
       />
     </div>
@@ -87,9 +85,9 @@ export type Step = {
  * Processo em etapas ligadas por hairline vermelha (Brand Book §09, seção 04).
  * O prazo só aparece quando é real, então `output` é opcional.
  *
- * No mobile, o scroll vertical prende a seção e desloca os passos na
- * horizontal — um por tela — até o último; depois a página segue. Desktop
- * continua no grid com o ciclo automático.
+ * No mobile, um gesto curto de scroll troca o passo com animação. No último
+ * card, o mesmo gesto solta a seção e a página segue. Desktop continua no
+ * grid com o ciclo automático.
  */
 export function StepList({
   steps,
@@ -129,33 +127,30 @@ export function StepList({
 
     const fill = pin.querySelector<HTMLElement>("[data-nx-track-fill]");
     const dot = pin.querySelector<HTMLElement>("[data-nx-track-dot]");
-    let frame = 0;
+    let index = 0;
+    let animating = false;
+    let unlock: number | undefined;
+    let touchY = 0;
+    let touchX = 0;
+    let gestureLocked = false;
 
-    const layout = () => {
+    const slideW = () => pin.clientWidth;
+
+    const pinned = () => {
+      const rect = pin.getBoundingClientRect();
       const stickyH = window.innerHeight - HEADER_PX;
-      const slideW = pin.clientWidth;
-      pin.style.height = `${stickyH + (total - 1) * slideW}px`;
+      return rect.top <= HEADER_PX + 2 && rect.bottom >= HEADER_PX + stickyH - 2;
     };
 
-    const apply = () => {
-      frame = 0;
-      const stickyH = window.innerHeight - HEADER_PX;
-      const travel = pin.offsetHeight - stickyH;
-      if (travel <= 0) return;
-
-      const scrolled = Math.min(
-        Math.max(HEADER_PX - pin.getBoundingClientRect().top, 0),
-        travel,
-      );
-      const progress = scrolled / travel;
-      const maxX = strip.scrollWidth - pin.clientWidth;
-      strip.style.transform = `translate3d(${-progress * maxX}px,0,0)`;
-
-      const t = progress * (total - 1);
-      if (fill) fill.style.width = `${((t + 1) / total) * 100}%`;
-      if (dot) dot.style.left = `${((t + 0.5) / total) * 100}%`;
-
-      const index = Math.round(t);
+    const paint = (next: number, animate: boolean) => {
+      index = Math.max(0, Math.min(total - 1, next));
+      const x = -index * slideW();
+      strip.style.transition = animate
+        ? `transform ${SNAP_MS}ms ${SNAP_EASE}`
+        : "none";
+      strip.style.transform = `translate3d(${x}px,0,0)`;
+      if (fill) fill.style.width = `${((index + 1) / total) * 100}%`;
+      if (dot) dot.style.left = `${((index + 0.5) / total) * 100}%`;
       for (let i = 0; i < strip.children.length; i++) {
         const item = strip.children[i];
         if (i === index) item.setAttribute("aria-current", "step");
@@ -163,33 +158,122 @@ export function StepList({
       }
     };
 
-    const onScroll = () => {
-      if (frame) return;
-      frame = requestAnimationFrame(apply);
+    const goTo = (next: number) => {
+      if (next === index || animating) return;
+      animating = true;
+      paint(next, true);
+      window.clearTimeout(unlock);
+      unlock = window.setTimeout(() => {
+        animating = false;
+      }, SNAP_MS);
     };
-    const onResize = () => {
-      layout();
-      apply();
+
+    const layout = () => {
+      const stickyH = window.innerHeight - HEADER_PX;
+      pin.style.height = `${stickyH + PIN_EXTRA}px`;
+      paint(index, false);
+    };
+
+    const releaseDown = () => {
+      const dest =
+        window.scrollY + pin.getBoundingClientRect().bottom - HEADER_PX;
+      window.scrollTo({ top: dest, behavior: "smooth" });
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      if (!pinned()) return;
+      if (animating) {
+        event.preventDefault();
+        return;
+      }
+      if (event.deltaY > 8 && index < total - 1) {
+        event.preventDefault();
+        goTo(index + 1);
+      } else if (event.deltaY > 8 && index === total - 1) {
+        event.preventDefault();
+        releaseDown();
+      } else if (event.deltaY < -8 && index > 0) {
+        event.preventDefault();
+        goTo(index - 1);
+      }
+    };
+
+    const onTouchStart = (event: TouchEvent) => {
+      touchY = event.touches[0].clientY;
+      touchX = event.touches[0].clientX;
+      gestureLocked = false;
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (!pinned()) return;
+      if (animating) {
+        event.preventDefault();
+        return;
+      }
+      const dy = touchY - event.touches[0].clientY;
+      const dx = touchX - event.touches[0].clientX;
+      if (gestureLocked) {
+        event.preventDefault();
+        return;
+      }
+      if (Math.max(Math.abs(dy), Math.abs(dx)) < SNAP_THRESHOLD) return;
+
+      const horizontal = Math.abs(dx) > Math.abs(dy);
+      const forward = horizontal ? dx > 0 : dy > 0;
+      if (forward && index < total - 1) {
+        gestureLocked = true;
+        event.preventDefault();
+        goTo(index + 1);
+      } else if (forward && index === total - 1) {
+        gestureLocked = true;
+        event.preventDefault();
+        releaseDown();
+      } else if (!forward && index > 0) {
+        gestureLocked = true;
+        event.preventDefault();
+        goTo(index - 1);
+      }
+    };
+
+    const onScroll = () => {
+      const rect = pin.getBoundingClientRect();
+      if (rect.top > window.innerHeight) {
+        if (index !== 0) paint(0, false);
+        return;
+      }
+      if (rect.bottom < 0) {
+        if (index !== total - 1) paint(total - 1, false);
+        return;
+      }
+      if (index < total - 1 && rect.top <= HEADER_PX + 2) {
+        const target = window.scrollY + rect.top - HEADER_PX;
+        if (Math.abs(window.scrollY - target) > 1) window.scrollTo(0, target);
+      }
     };
 
     layout();
-    apply();
+    window.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onResize, { passive: true });
+    window.addEventListener("resize", layout, { passive: true });
     return () => {
-      cancelAnimationFrame(frame);
+      window.clearTimeout(unlock);
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onResize);
+      window.removeEventListener("resize", layout);
       pin.style.height = "";
       strip.style.transform = "";
+      strip.style.transition = "";
     };
   }, [pinning, total]);
 
   return (
     <div
       ref={pinRef}
-      className="relative max-md:-mx-5 max-md:[height:calc(100dvh-68px+(var(--nx-steps)-1)*100vw)] motion-reduce:max-md:h-auto md:contents"
-      style={{ "--nx-steps": total } as CSSProperties}
+      className="relative max-md:-mx-5 max-md:h-[calc(100dvh-68px+5rem)] motion-reduce:max-md:h-auto md:contents"
     >
       <div className="max-md:sticky max-md:top-[68px] max-md:flex max-md:h-[calc(100dvh-68px)] max-md:flex-col max-md:overflow-hidden motion-reduce:max-md:static motion-reduce:max-md:h-auto motion-reduce:max-md:overflow-visible">
         {intro}
