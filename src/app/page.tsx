@@ -3,11 +3,11 @@ import Link from "next/link";
 
 import { CtaForm } from "@/components/cta-block";
 import { FaqSection, type FaqItem } from "@/components/faq";
+import { ProblemRail } from "@/components/problem-rail";
 import { StepList, type Step } from "@/components/step-track";
 import { HeroBackdrop, HeroPill, Section, SectionHead } from "@/components/ui";
 import { WaLink } from "@/components/wa-link";
 
-/** Sem vermelho nesta seção — ele volta na solução (Brand Book §09, seção 02). */
 const PROBLEMS = [
   {
     kicker: "CONVERSA REPETIDA",
@@ -122,12 +122,13 @@ export default function HomePage() {
           />
           <div
             data-nx-anim="glow"
-            className="absolute inset-x-0 top-[42%] h-[420px] -translate-y-1/2 [animation:nx-drift_13s_ease-in-out_infinite] [background:radial-gradient(ellipse_at_50%_50%,rgba(255,255,255,.06),transparent_62%)]"
+            className="absolute inset-x-0 top-[42%] h-[420px] -translate-y-1/2 [animation:nx-drift_13s_ease-in-out_infinite] [background:radial-gradient(ellipse_at_50%_50%,rgba(225,6,0,.16),transparent_62%)]"
           />
         </div>
         <div className="relative mx-auto max-w-[1280px] px-5 py-24 md:px-8 lg:px-12">
           <SectionHead
             eyebrow="O QUE TRAVA A OPERAÇÃO"
+            eyebrowTone="red"
             title={
               <span className="block max-w-[26ch]">
                 O trabalho existe. O sistema não acompanha.
@@ -136,65 +137,7 @@ export default function HomePage() {
             lead="Três padrões que aparecem em quase toda operação antes de existir sistema."
             className="mb-14"
           />
-          <div className="relative">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute right-[12%] left-[12%] hidden h-px overflow-visible md:block"
-              style={{
-                top: 226,
-                backgroundImage:
-                  "repeating-linear-gradient(90deg, #2a2a2a 0 7px, transparent 7px 14px)",
-              }}
-            >
-              <span
-                data-nx-anim="stall"
-                className="absolute top-1/2 size-[9px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#d8d8d8] [animation:nx-stall_3.8s_ease-in-out_infinite] [box-shadow:0_0_0_4px_rgba(216,216,216,.16)]"
-              />
-            </div>
-            <ol className="grid grid-cols-1 gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] md:gap-8">
-              {PROBLEMS.map((problem, index) => (
-                <li
-                  key={problem.title}
-                  className="group relative flex flex-col items-center text-center"
-                >
-                  <figure className="relative mx-auto mb-10 w-[min(100%,220px)]">
-                    <span
-                      aria-hidden
-                      data-nx-anim="halo"
-                      className="absolute inset-[20%] rounded-full bg-white/10 blur-3xl [animation:nx-halo_3.4s_ease-in-out_infinite]"
-                      style={{ animationDelay: `${index * 0.45}s` }}
-                    />
-                    <div
-                      data-nx-anim="float"
-                      className="relative [animation:nx-float_5.6s_ease-in-out_infinite]"
-                      style={{
-                        animationDelay: `${index * 0.7}s`,
-                        WebkitMaskImage:
-                          "radial-gradient(circle at center, #000 74%, transparent 97%)",
-                        maskImage:
-                          "radial-gradient(circle at center, #000 74%, transparent 97%)",
-                      }}
-                    >
-                      <Image
-                        src={problem.image}
-                        alt=""
-                        width={800}
-                        height={800}
-                        unoptimized
-                        loading="eager"
-                        className="relative h-auto w-full mix-blend-screen transition-transform duration-500 ease-[cubic-bezier(.2,.8,.2,1)] group-hover:scale-[1.05]"
-                      />
-                    </div>
-                  </figure>
-                  <p className="nx-label">{problem.kicker}</p>
-                  <p className="mt-4 mb-3 max-w-[22ch] font-display text-[22px]/[1.25] font-medium tracking-[-0.02em] text-white md:text-[24px]/[1.25]">
-                    {problem.title}
-                  </p>
-                  <p className="nx-body max-w-[36ch]">{problem.text}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
+          <ProblemRail items={PROBLEMS} />
         </div>
       </section>
 
