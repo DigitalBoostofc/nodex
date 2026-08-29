@@ -132,13 +132,17 @@ export default function HomePage() {
       </Section>
 
       <Section>
-        <SectionHead
-          eyebrow="COMO TRABALHAMOS"
-          title="Do diagnóstico ao sistema em produção."
-          lead="Sem mistério de escopo. Cada etapa tem saída visível."
-          className="mb-11"
+        <StepList
+          intro={
+            <SectionHead
+              eyebrow="COMO TRABALHAMOS"
+              title="Do diagnóstico ao sistema em produção."
+              lead="Sem mistério de escopo. Cada etapa tem saída visível."
+              className="mb-8 px-5 md:mb-11 md:px-0"
+            />
+          }
+          steps={PROCESS}
         />
-        <StepList steps={PROCESS} />
       </Section>
 
       <Section>
