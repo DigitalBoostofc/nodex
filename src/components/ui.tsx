@@ -44,10 +44,10 @@ export function HeroBackdrop({
         >
           <div
             data-nx-anim="line"
-            className="absolute inset-x-0 h-[128px] -translate-y-1/2 [animation:nx-scan-full_6.5s_linear_infinite]"
+            className="absolute inset-x-0 h-[128px] -translate-y-1/2 [animation:nx-scan-full_11s_linear_infinite]"
           >
-            <div className="absolute inset-0 [background:linear-gradient(180deg,rgba(225,6,0,0),rgba(225,6,0,.42),rgba(225,6,0,0))]" />
-            <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-[#FF1420]/80 [box-shadow:0_0_18px_rgba(225,6,0,.7)]" />
+            <div className="absolute inset-0 [background:linear-gradient(180deg,rgba(225,6,0,0),rgba(225,6,0,.16),rgba(225,6,0,0))]" />
+            <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-[#E10600]/35 [box-shadow:0_0_10px_rgba(225,6,0,.28)]" />
           </div>
         </div>
       ) : null}

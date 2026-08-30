@@ -27,7 +27,7 @@ export type ForceFieldBackgroundProps = {
   className?: string;
 };
 
-const SCAN_MS = 6500;
+const SCAN_MS = 11000;
 const WAVE_BAND = 92;
 
 const NODEX_SWATCHES = [
