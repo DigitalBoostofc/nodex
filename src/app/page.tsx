@@ -84,11 +84,11 @@ const FAQ: FaqItem[] = [
 export default function HomePage() {
   return (
     <>
-      <section className="relative grid overflow-hidden">
+      <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0">
           <HeroBackdrop glowAt="72%" glowStrength={0.42} scan="full" />
         </div>
-        <div className="pointer-events-none relative z-10 col-start-1 row-start-1 mx-auto flex w-full max-w-[1280px] flex-col items-center px-5 pt-12 pb-4 text-center md:px-8 md:pt-24 lg:min-h-[720px] lg:items-center lg:px-12 lg:pb-28 lg:text-left">
+        <div className="pointer-events-none relative z-10 flex w-full flex-col items-center px-5 pt-12 pb-12 text-center md:px-8 md:pt-24 lg:min-h-[720px] lg:justify-center lg:px-12 lg:pb-28 lg:text-left">
           <div className="w-full max-w-[36rem] lg:max-w-[38rem]">
             <span className="nx-label tracking-[0.22em]">NODEX LABS</span>
             <div className="mt-[22px] flex justify-center lg:justify-start">
@@ -109,13 +109,13 @@ export default function HomePage() {
                 Ver soluções
               </Link>
             </div>
-            <p className="mt-11 font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-[#D0D0D0] [text-shadow:0_1px_10px_rgba(0,0,0,0.95),0_0_20px_rgba(0,0,0,0.9)]">
-              DO DIAGNÓSTICO AO SISTEMA EM PRODUÇÃO.
-            </p>
           </div>
-        </div>
-        <div className="relative z-0 col-start-1 row-start-2 mx-auto mb-14 aspect-square w-[min(86vw,380px)] lg:row-start-1 lg:mb-0 lg:aspect-auto lg:h-full lg:min-h-[720px] lg:w-full lg:max-w-none">
-          <HeroForceField />
+          <div className="relative z-0 mt-3 aspect-square w-[min(86vw,380px)] lg:pointer-events-auto lg:absolute lg:inset-0 lg:z-0 lg:mt-0 lg:aspect-auto lg:h-full lg:w-full lg:max-w-none">
+            <HeroForceField />
+          </div>
+          <p className="relative z-10 mt-5 w-full max-w-[36rem] font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-[#D0D0D0] [text-shadow:0_1px_10px_rgba(0,0,0,0.95),0_0_20px_rgba(0,0,0,0.9)] lg:mt-11 lg:max-w-[38rem]">
+            DO DIAGNÓSTICO AO SISTEMA EM PRODUÇÃO.
+          </p>
         </div>
       </section>
 
