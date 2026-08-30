@@ -129,11 +129,11 @@ export default function HomePage() {
         />
         <div className="relative mx-auto max-w-[1280px] px-5 py-24 md:px-8 lg:px-12">
           <SectionHead
-            eyebrow="O QUE TRAVA A OPERAÇÃO"
+            eyebrow="O QUE TRAVA A OPERAÇÃO?"
             eyebrowTone="red"
             title={
-              <span className="block max-w-[18ch]">
-                Três principais padrões de erro.
+              <span className="block max-w-[16ch]">
+                Os 3 principais erros
               </span>
             }
             className="mb-14"
