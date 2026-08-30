@@ -29,7 +29,7 @@ export type ForceFieldBackgroundProps = {
   className?: string;
 };
 
-const SCAN_MS = 18000;
+const SCAN_MS = 15000;
 const WAVE_BAND = 92;
 
 const NODEX_SWATCHES = [
@@ -153,6 +153,7 @@ export function ForceFieldBackground({
       }
 
       let relayout = () => {};
+      let scanLineEl: Element | null | undefined;
 
       const sketch = (p: p5) => {
         let originalImg: p5.Image | undefined;
@@ -299,6 +300,26 @@ export function ForceFieldBackground({
           lastDensity = keep;
         }
 
+        function scanYInCanvas() {
+          const fallback = ((p.millis() % SCAN_MS) / SCAN_MS) * p.height;
+          const node = containerRef.current;
+          const canvasEl = node?.querySelector("canvas");
+          if (!node || !canvasEl) return fallback;
+
+          if (!scanLineEl) {
+            scanLineEl =
+              node.closest("section")?.querySelector("[data-nx-anim='line']") ??
+              null;
+          }
+          if (!scanLineEl) return fallback;
+
+          const line = scanLineEl.getBoundingClientRect();
+          const canvas = canvasEl.getBoundingClientRect();
+          if (canvas.height < 2) return fallback;
+          const lineCenter = line.top + line.height / 2;
+          return ((lineCenter - canvas.top) / canvas.height) * p.height;
+        }
+
         function applyForceField(mx: number, my: number) {
           const props = propsRef.current;
           if (!props.magnifierEnabled) return;
@@ -348,8 +369,7 @@ export function ForceFieldBackground({
           img.loadPixels();
           p.noFill();
 
-          const scanT = (p.millis() % SCAN_MS) / SCAN_MS;
-          const scanY = scanT * p.height;
+          const scanY = scanYInCanvas();
 
           for (const pt of points) {
             const x = pt.pos.x;
