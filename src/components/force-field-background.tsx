@@ -224,7 +224,7 @@ export function ForceFieldBackground({
           const align = propsRef.current.markAlign;
           const drawX =
             align === "right"
-              ? Math.max(p.width * 0.42, p.width - drawW - p.width * 0.04)
+              ? Math.max(p.width * 0.36, p.width - drawW - p.width * 0.1)
               : (p.width - drawW) / 2;
           layer.image(
             originalImg,
