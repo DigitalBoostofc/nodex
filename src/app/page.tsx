@@ -220,7 +220,12 @@ export default function HomePage() {
       </Section>
 
       <CtaForm
-        title="Você já sabe onde trava. A gente desenha como destrava."
+        title={
+          <>
+            Você já sabe onde trava.{" "}
+            <span className="text-nx-red">A gente te mostra como destravar.</span>
+          </>
+        }
         lead={
           <>
             <span className="lg:hidden">
