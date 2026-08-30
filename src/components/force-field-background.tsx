@@ -153,7 +153,7 @@ export function ForceFieldBackground({
       }
 
       let relayout = () => {};
-      let scanLineEl: Element | null | undefined;
+      let scanLineEls: Element[] | null = null;
 
       const sketch = (p: p5) => {
         let originalImg: p5.Image | undefined;
@@ -300,24 +300,33 @@ export function ForceFieldBackground({
           lastDensity = keep;
         }
 
-        function scanYInCanvas() {
-          const fallback = ((p.millis() % SCAN_MS) / SCAN_MS) * p.height;
+        function scanYsInCanvas() {
+          const fallback = [((p.millis() % SCAN_MS) / SCAN_MS) * p.height];
           const node = containerRef.current;
           const canvasEl = node?.querySelector("canvas");
           if (!node || !canvasEl) return fallback;
 
-          if (!scanLineEl) {
-            scanLineEl =
-              node.closest("section")?.querySelector("[data-nx-anim='line']") ??
-              null;
+          if (!scanLineEls) {
+            scanLineEls = [
+              ...(node
+                .closest("section")
+                ?.querySelectorAll("[data-nx-anim='line']") ?? []),
+            ];
           }
-          if (!scanLineEl) return fallback;
+          if (scanLineEls.length === 0) return fallback;
 
-          const line = scanLineEl.getBoundingClientRect();
           const canvas = canvasEl.getBoundingClientRect();
           if (canvas.height < 2) return fallback;
-          const lineCenter = line.top + line.height / 2;
-          return ((lineCenter - canvas.top) / canvas.height) * p.height;
+
+          const ys: number[] = [];
+          for (const el of scanLineEls) {
+            if (getComputedStyle(el).display === "none") continue;
+            const line = el.getBoundingClientRect();
+            if (line.height < 2) continue;
+            const lineCenter = line.top + line.height / 2;
+            ys.push(((lineCenter - canvas.top) / canvas.height) * p.height);
+          }
+          return ys.length > 0 ? ys : fallback;
         }
 
         function applyForceField(mx: number, my: number) {
@@ -369,7 +378,7 @@ export function ForceFieldBackground({
           img.loadPixels();
           p.noFill();
 
-          const scanY = scanYInCanvas();
+          const scanYs = scanYsInCanvas();
 
           for (const pt of points) {
             const x = pt.pos.x;
@@ -424,8 +433,17 @@ export function ForceFieldBackground({
             let drawX = x;
             let drawY = y;
             if (onMark) {
-              const dist = y - scanY;
-              if (Math.abs(dist) < WAVE_BAND) {
+              let dist = 0;
+              let nearest = WAVE_BAND;
+              for (const scanY of scanYs) {
+                const d = y - scanY;
+                const ad = Math.abs(d);
+                if (ad < nearest) {
+                  nearest = ad;
+                  dist = d;
+                }
+              }
+              if (nearest < WAVE_BAND) {
                 const env = 1 - Math.abs(dist) / WAVE_BAND;
                 const env2 = env * env;
                 const phase =
