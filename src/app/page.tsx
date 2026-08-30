@@ -34,7 +34,7 @@ const PROCESS: Step[] = [
   {
     title: "Diagnóstico",
     text: "Mapeamos os processos, automatizamos as tarefas repetitivas e definimos o MVP.",
-    output: "escopo da menor entrega que já muda o dia.",
+    output: "escopo da menor entrega que já muda o jogo.",
   },
   {
     title: "Desenho",
