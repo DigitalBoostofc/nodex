@@ -6,7 +6,7 @@ import { FaqSection, type FaqItem } from "@/components/faq";
 import { ProblemRail } from "@/components/problem-rail";
 import { StepList, type Step } from "@/components/step-track";
 import { HeroForceField } from "@/components/hero-force-field";
-import { HeroPill, Section, SectionHead } from "@/components/ui";
+import { HeroBackdrop, HeroPill, Section, SectionHead } from "@/components/ui";
 import { WaLink } from "@/components/wa-link";
 
 const PROBLEMS = [
@@ -84,24 +84,26 @@ const FAQ: FaqItem[] = [
 export default function HomePage() {
   return (
     <>
-      <section className="relative overflow-hidden">
-        <HeroForceField />
-        <div className="pointer-events-none relative z-10 mx-auto flex min-h-[640px] max-w-[1280px] items-center px-5 pt-12 pb-28 md:min-h-[720px] md:px-8 md:pt-24 lg:px-12">
-          <div className="w-full max-w-[36rem] text-left lg:max-w-[38rem]">
+      <section className="relative grid overflow-hidden">
+        <div className="pointer-events-none absolute inset-0">
+          <HeroBackdrop glowAt="72%" glowStrength={0.42} scan="full" />
+        </div>
+        <div className="pointer-events-none relative z-10 col-start-1 row-start-1 mx-auto flex w-full max-w-[1280px] flex-col items-center px-5 pt-12 pb-4 text-center md:px-8 md:pt-24 lg:min-h-[720px] lg:items-center lg:px-12 lg:pb-28 lg:text-left">
+          <div className="w-full max-w-[36rem] lg:max-w-[38rem]">
             <span className="nx-label tracking-[0.22em]">NODEX LABS</span>
-            <div className="mt-[22px]">
+            <div className="mt-[22px] flex justify-center lg:justify-start">
               <HeroPill pulsing>SISTEMAS · CHATBOTS · AUTOMAÇÃO</HeroPill>
             </div>
-            <h1 className="nx-h1 mt-8 max-w-[14ch]">
+            <h1 className="nx-h1 mx-auto mt-8 max-w-[14ch] lg:mx-0">
               Seu processo hoje é manual.{" "}
               <span className="text-nx-red">Amanhã ele roda sozinho.</span>
             </h1>
-            <p className="mt-7 max-w-[46ch] text-[19px]/[1.65] font-light text-[#EDEDED] [text-shadow:0_1px_2px_rgba(0,0,0,0.9),0_0_22px_rgba(0,0,0,0.85)]">
+            <p className="mx-auto mt-7 max-w-[46ch] text-[19px]/[1.65] font-light text-[#EDEDED] [text-shadow:0_1px_2px_rgba(0,0,0,0.9),0_0_22px_rgba(0,0,0,0.85)] lg:mx-0">
               A Nodex Labs constrói chatbots, automações e sistemas sob medida,
               integrados ao processo que você já opera. Do primeiro diagnóstico à
               manutenção depois de ir ao ar.
             </p>
-            <div className="pointer-events-auto mt-11 flex flex-wrap justify-start gap-[14px]">
+            <div className="pointer-events-auto mt-11 flex flex-wrap justify-center gap-[14px] lg:justify-start">
               <WaLink className="nx-btn nx-btn-pill">Fale com a Nodex →</WaLink>
               <Link href="/solucoes" className="nx-btn-ghost nx-btn-ghost-pill">
                 Ver soluções
@@ -111,6 +113,9 @@ export default function HomePage() {
               DO DIAGNÓSTICO AO SISTEMA EM PRODUÇÃO.
             </p>
           </div>
+        </div>
+        <div className="relative z-0 col-start-1 row-start-2 mx-auto mb-14 aspect-square w-[min(86vw,380px)] lg:row-start-1 lg:mb-0 lg:aspect-auto lg:h-full lg:min-h-[720px] lg:w-full lg:max-w-none">
+          <HeroForceField />
         </div>
       </section>
 
