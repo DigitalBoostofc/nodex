@@ -221,7 +221,7 @@ export default function HomePage() {
 
       <CtaForm
         title="Você já sabe onde trava. A gente desenha como destrava."
-        lead="Preencha o formulário abaixo que a gente entra em contato."
+        lead="Preencha o formulário abaixo agora mesmo!"
       />
 
       <FaqSection items={FAQ} />
