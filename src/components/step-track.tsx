@@ -314,7 +314,7 @@ export function StepList({
         nextLabel="Próxima etapa"
         className="mt-6 md:hidden motion-reduce:hidden"
       />
-      <div className="mt-8 flex justify-center md:hidden">
+      <div className="mt-8 flex justify-center md:mt-12">
         <a href="#contato" className="nx-btn nx-btn-pill">
           Solicitar sistema
         </a>
