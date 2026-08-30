@@ -138,7 +138,6 @@ export function ForceFieldBackground({
 
     let cancelled = false;
     let observer: ResizeObserver | null = null;
-    let poll = 0;
     let syncSize = () => {};
 
     (async () => {
@@ -155,33 +154,31 @@ export function ForceFieldBackground({
       let relayout = () => {};
       let scanLineEls: Element[] | null = null;
 
+      type Particle = {
+        x: number;
+        y: number;
+        ox: number;
+        oy: number;
+        shadeIndex: number;
+        strokeSize: number;
+        onMark: boolean;
+      };
+
       const sketch = (p: p5) => {
         let originalImg: p5.Image | undefined;
         let img: p5.Image | undefined;
-        let palette: p5.Color[] = [];
-        let points: {
-          pos: p5.Vector;
-          originalPos: p5.Vector;
-          vel: p5.Vector;
-        }[] = [];
+        let pointsByShade: Particle[][] = NODEX_SWATCHES.map(() => []);
 
         let lastSpacing = -1;
         let lastNoiseScale = -1;
         let lastDensity = -1;
         let lastInvertImage: boolean | null = null;
-        let magnifierX = 0;
-        let magnifierY = 0;
-        let pointerSeen = false;
-        const magnifierInertia = 0.12;
 
         p.setup = () => {
           const { clientWidth, clientHeight } = containerRef.current!;
           p.createCanvas(Math.max(1, clientWidth), Math.max(1, clientHeight));
           p.pixelDensity(1);
           p.colorMode(p.RGB, 255);
-          magnifierX = p.width / 2;
-          magnifierY = p.height / 2;
-          buildPalette();
           p.loadImage(
             imageUrl,
             (loaded) => {
@@ -198,31 +195,21 @@ export function ForceFieldBackground({
           relayout();
         };
 
-        p.mouseMoved = () => {
-          pointerSeen = true;
-        };
-        p.touchMoved = () => {
-          pointerSeen = true;
-          return true;
-        };
-
         relayout = () => {
           const node = containerRef.current;
           if (!node) return;
           const nextW = node.clientWidth;
           const nextH = node.clientHeight;
           if (nextW < 2 || nextH < 2) return;
-          if (nextW !== p.width || nextH !== p.height) {
+          const sizeChanged = nextW !== p.width || nextH !== p.height;
+          if (!sizeChanged && img) return;
+          if (sizeChanged) {
             p.resizeCanvas(nextW, nextH);
           }
           if (!originalImg) return;
           processImage();
           generatePoints();
         };
-
-        function buildPalette() {
-          palette = NODEX_SWATCHES.map((hex) => p.color(hex));
-        }
 
         function processImage() {
           if (!originalImg || p.width < 2 || p.height < 2) return;
@@ -257,41 +244,92 @@ export function ForceFieldBackground({
 
           img = layer.get();
           layer.remove();
+          img.loadPixels();
           if (propsRef.current.invertImage) {
-            img.loadPixels();
             for (let i = 0; i < img.pixels.length; i += 4) {
               img.pixels[i] = 255 - img.pixels[i];
               img.pixels[i + 1] = 255 - img.pixels[i + 1];
               img.pixels[i + 2] = 255 - img.pixels[i + 2];
             }
             img.updatePixels();
+            img.loadPixels();
           }
           lastInvertImage = propsRef.current.invertImage;
         }
 
         function generatePoints() {
           if (!img) return;
-          points = [];
-          const {
-            spacing: gap,
-            density: keep,
-            noiseScale: noise,
-          } = propsRef.current;
+          const pixels = img.pixels;
+          const imgW = img.width;
+          const imgH = img.height;
+          const props = propsRef.current;
+          const gap = props.spacing;
+          const keep = props.density;
+          const noise = props.noiseScale;
           const safeSpacing = Math.max(3, gap);
+          const fillField = !props.invertWireframe && props.threshold <= 0;
 
-          for (let y = 0; y < img.height; y += safeSpacing) {
-            for (let x = 0; x < img.width; x += safeSpacing) {
-              if (p.random() > keep) continue;
-              const nx = p.noise(x * noise, y * noise) - 0.5;
+          pointsByShade = NODEX_SWATCHES.map(() => []);
+
+          for (let y = 0; y < imgH; y += safeSpacing) {
+            for (let x = 0; x < imgW; x += safeSpacing) {
+              if (keep <= 1 && p.random() > keep) continue;
+              const nx = noise === 0 ? 0 : p.noise(x * noise, y * noise) - 0.5;
               const ny =
-                p.noise((x + 500) * noise, (y + 500) * noise) - 0.5;
+                noise === 0
+                  ? 0
+                  : p.noise((x + 500) * noise, (y + 500) * noise) - 0.5;
               const px = x + nx * safeSpacing;
               const py = y + ny * safeSpacing;
-              points.push({
-                pos: p.createVector(px, py),
-                originalPos: p.createVector(px, py),
-                vel: p.createVector(0, 0),
-              });
+              const ix = Math.max(0, Math.min(imgW - 1, x | 0));
+              const iy = Math.max(0, Math.min(imgH - 1, y | 0));
+              const index = (ix + iy * imgW) * 4;
+              const red = pixels[index];
+              const green = pixels[index + 1];
+              const blue = pixels[index + 2];
+              if (red === undefined) continue;
+              const brightness = Math.max(red, green, blue);
+              const isRedMark =
+                red > 70 && red > green + 40 && red > blue + 40;
+              if (fillField && !isRedMark && brightness < 24) continue;
+
+              const visible = fillField
+                ? true
+                : props.invertWireframe
+                  ? brightness < props.threshold
+                  : brightness > props.threshold;
+              if (!visible) continue;
+
+              const mark = isRedMark ? Math.max(brightness, 235) : brightness;
+              const shadeIndex = fillField
+                ? isRedMark
+                  ? 3
+                  : mark < 24
+                    ? 5
+                    : 1
+                : Math.max(
+                    0,
+                    Math.min(
+                      NODEX_SWATCHES.length - 1,
+                      Math.floor(
+                        (brightness / 255) * (NODEX_SWATCHES.length - 1),
+                      ),
+                    ),
+                  );
+              const strokeSize =
+                props.minStroke +
+                (mark / 255) * (props.maxStroke - props.minStroke);
+              const particle: Particle = {
+                x: px,
+                y: py,
+                ox: px,
+                oy: py,
+                shadeIndex,
+                strokeSize,
+                onMark: isRedMark || mark > 48,
+              };
+              const bucket = pointsByShade[shadeIndex];
+              if (bucket) bucket.push(particle);
             }
           }
 
@@ -302,6 +340,8 @@ export function ForceFieldBackground({
 
         function scanYsInCanvas() {
           const fallback = [((p.millis() % SCAN_MS) / SCAN_MS) * p.height];
+          if (p.width >= 720) return fallback;
+
           const node = containerRef.current;
           const canvasEl = node?.querySelector("canvas");
           if (!node || !canvasEl) return fallback;
@@ -320,7 +360,6 @@ export function ForceFieldBackground({
 
           const ys: number[] = [];
           for (const el of scanLineEls) {
-            if (getComputedStyle(el).display === "none") continue;
             const line = el.getBoundingClientRect();
             if (line.height < 2) continue;
             const lineCenter = line.top + line.height / 2;
@@ -329,37 +368,13 @@ export function ForceFieldBackground({
           return ys.length > 0 ? ys : fallback;
         }
 
-        function applyForceField(mx: number, my: number) {
-          const props = propsRef.current;
-          if (!props.magnifierEnabled) return;
-          const cursor = p.createVector(mx, my);
-
-          for (const pt of points) {
-            const dir = P5.Vector.sub(pt.pos, cursor);
-            const d = dir.mag();
-            if (d < props.magnifierRadius) {
-              dir.normalize();
-              const falloff = 1 - d / props.magnifierRadius;
-              dir.mult(props.forceStrength * falloff * falloff);
-              pt.vel.add(dir);
-            }
-            pt.vel.mult(props.friction);
-            const restore = P5.Vector.sub(pt.pos, pt.originalPos).mult(
-              -props.restoreSpeed,
-            );
-            pt.vel.add(restore);
-            pt.pos.add(pt.vel);
-          }
-        }
-
         p.draw = () => {
           if (!img) return;
-          p.clear();
 
           const props = propsRef.current;
-
           if (props.invertImage !== lastInvertImage) {
             processImage();
+            generatePoints();
           }
           if (
             props.spacing !== lastSpacing ||
@@ -369,96 +384,46 @@ export function ForceFieldBackground({
             generatePoints();
           }
 
-          if (pointerSeen) {
-            magnifierX = p.lerp(magnifierX, p.mouseX, magnifierInertia);
-            magnifierY = p.lerp(magnifierY, p.mouseY, magnifierInertia);
-            applyForceField(magnifierX, magnifierY);
-          }
-
-          img.loadPixels();
-          p.noFill();
+          p.clear();
+          const canvasEl = containerRef.current?.querySelector("canvas");
+          const ctx = canvasEl?.getContext("2d");
+          if (!ctx) return;
 
           const scanYs = scanYsInCanvas();
+          const now = p.millis();
 
-          for (const pt of points) {
-            const x = pt.pos.x;
-            const y = pt.pos.y;
-            const d = p.dist(x, y, magnifierX, magnifierY);
-            const px = p.constrain(Math.floor(x), 0, img.width - 1);
-            const py = p.constrain(Math.floor(y), 0, img.height - 1);
-            const index = (px + py * img.width) * 4;
-            const red = img.pixels[index];
-            const green = img.pixels[index + 1];
-            const blue = img.pixels[index + 2];
-            if (red === undefined) continue;
-            const brightness = Math.max(red, green, blue);
-            const isRedMark = red > 70 && red > green + 40 && red > blue + 40;
-
-            const fillField = !props.invertWireframe && props.threshold <= 0;
-            const visible = fillField
-              ? true
-              : props.invertWireframe
-                ? brightness < props.threshold
-                : brightness > props.threshold;
-            if (!visible) continue;
-
-            const mark = isRedMark ? Math.max(brightness, 235) : brightness;
-            const shadeIndex = fillField
-              ? isRedMark
-                ? 3
-                : mark < 24
-                  ? 5
-                  : 1
-              : p.constrain(
-                  Math.floor(
-                    p.map(brightness, 0, 255, 0, palette.length - 1),
-                  ),
-                  0,
-                  palette.length - 1,
-                );
-            let strokeSize = p.map(
-              mark,
-              0,
-              255,
-              props.minStroke,
-              props.maxStroke,
-            );
-            if (props.magnifierEnabled && pointerSeen && d < props.magnifierRadius) {
-              strokeSize *= p.map(d, 0, props.magnifierRadius, 2.2, 1);
-            }
-            const color = palette[shadeIndex];
-            if (!color) continue;
-
-            const onMark = isRedMark || mark > 48;
-            let drawX = x;
-            let drawY = y;
-            if (onMark) {
-              let dist = 0;
-              let nearest = WAVE_BAND;
-              for (const scanY of scanYs) {
-                const d = y - scanY;
-                const ad = Math.abs(d);
-                if (ad < nearest) {
-                  nearest = ad;
-                  dist = d;
+          for (let i = 0; i < pointsByShade.length; i++) {
+            const bucket = pointsByShade[i];
+            if (!bucket || bucket.length === 0) continue;
+            ctx.fillStyle = NODEX_SWATCHES[i] ?? "#ffffff";
+            for (const pt of bucket) {
+              let drawX = pt.x;
+              let drawY = pt.y;
+              if (pt.onMark) {
+                let dist = 0;
+                let nearest = WAVE_BAND;
+                for (const scanY of scanYs) {
+                  const d = pt.y - scanY;
+                  const ad = Math.abs(d);
+                  if (ad < nearest) {
+                    nearest = ad;
+                    dist = d;
+                  }
+                }
+                if (nearest < WAVE_BAND) {
+                  const env = 1 - nearest / WAVE_BAND;
+                  const env2 = env * env;
+                  const phase = pt.ox * 0.048 + now * 0.0035;
+                  drawX = pt.x + Math.sin(phase) * 18 * env2;
+                  drawY =
+                    pt.y +
+                    Math.cos(phase * 0.72) * 7 * env2 +
+                    Math.sin((dist / WAVE_BAND) * Math.PI) * 10 * env;
                 }
               }
-              if (nearest < WAVE_BAND) {
-                const env = 1 - Math.abs(dist) / WAVE_BAND;
-                const env2 = env * env;
-                const phase =
-                  pt.originalPos.x * 0.048 + p.millis() * 0.0035;
-                drawX = x + Math.sin(phase) * 18 * env2;
-                drawY =
-                  y +
-                  Math.cos(phase * 0.72) * 7 * env2 +
-                  Math.sin((dist / WAVE_BAND) * Math.PI) * 10 * env;
-              }
+              const s = pt.strokeSize;
+              ctx.fillRect(drawX - s * 0.5, drawY - s * 0.5, s, s);
             }
-
-            p.stroke(color);
-            p.strokeWeight(strokeSize);
-            p.point(drawX, drawY);
           }
         };
       };
@@ -472,14 +437,12 @@ export function ForceFieldBackground({
       observer = new ResizeObserver(syncSize);
       observer.observe(containerRef.current);
       window.addEventListener("resize", syncSize);
-      poll = window.setInterval(syncSize, 250);
     })();
 
     return () => {
       cancelled = true;
       observer?.disconnect();
       window.removeEventListener("resize", syncSize);
-      window.clearInterval(poll);
       p5InstanceRef.current?.remove();
       p5InstanceRef.current = null;
     };
