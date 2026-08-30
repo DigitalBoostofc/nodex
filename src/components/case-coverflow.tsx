@@ -58,6 +58,7 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
         tabIndex={0}
         onKeyDown={onStageKey}
       >
+        <div aria-hidden className="nx-coverflow-glow" />
         {items.map((item, index) => {
           const pos = positionFor(index - active);
           const on = index === active;
@@ -100,11 +101,6 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
                   <p className="text-[16px]/[1.65] font-light text-nx-muted md:text-[17px]/[1.65]">
                     {item.text}
                   </p>
-                  {item.href ? (
-                    <span className="mt-auto pt-5 text-[14px]/[1] font-medium text-nx-red">
-                      Ver o case →
-                    </span>
-                  ) : null}
                 </>
               )}
             </>

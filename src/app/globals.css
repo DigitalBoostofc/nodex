@@ -193,6 +193,26 @@
     transform-style: preserve-3d;
   }
 
+  /* Luz vermelha atrás do card da frente — não é borda, é backlight. */
+  .nx-coverflow-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 1;
+    width: min(82%, 420px);
+    height: 78%;
+    pointer-events: none;
+    border-radius: 28px;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(225, 6, 0, 0.58) 0%,
+      rgba(225, 6, 0, 0.2) 42%,
+      transparent 70%
+    );
+    filter: blur(28px);
+    transform: translate(-50%, -50%);
+  }
+
   .nx-coverflow-card {
     transform-style: preserve-3d;
     backface-visibility: hidden;
@@ -215,11 +235,7 @@
     opacity: 1;
     z-index: 30;
     pointer-events: auto;
-    border-color: var(--color-nx-red);
-    box-shadow:
-      0 20px 60px rgba(0, 0, 0, 0.8),
-      0 40px 90px -30px rgba(225, 6, 0, 0.35),
-      0 0 0 1px rgba(225, 6, 0, 0.25);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.72);
   }
 
   .nx-coverflow-card[data-pos="next"] {
@@ -565,6 +581,10 @@
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
+  }
+
+  .nx-coverflow-glow {
+    display: none;
   }
 
   .nx-coverflow-card {
