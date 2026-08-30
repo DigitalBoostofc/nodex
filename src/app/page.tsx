@@ -180,6 +180,7 @@ export default function HomePage() {
             />
           }
           steps={PROCESS}
+          mobileCycleMs={7000}
         />
       </Section>
 

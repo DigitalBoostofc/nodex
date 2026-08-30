@@ -14,6 +14,7 @@ const CYCLE_MS = 2600;
 const MD_QUERY = "(min-width: 768px)";
 const REDUCE_QUERY = "(prefers-reduced-motion: reduce)";
 const STEP_SWIPE_PX = 16;
+const MOBILE_MOVE_MS = 380;
 
 /**
  * Percorre os passos sozinho para que a etapa em destaque se explique sem
@@ -91,19 +92,25 @@ export type Step = {
  *
  * Mobile: carrossel com arraste, pontos e altura de conteúdo — a página
  * continua rolando. Um gesto troca só um passo, mesmo em flick rápido.
+ * `mobileCycleMs` autoavança e volta da última etapa à primeira.
  * Desktop: grid com o ciclo automático.
  */
 export function StepList({
   steps,
   intro,
+  mobileCycleMs,
 }: {
   steps: readonly Step[];
   intro?: ReactNode;
+  /** Intervalo do autoplay mobile. Omitir desliga o ciclo. */
+  mobileCycleMs?: number;
 }) {
   const scrollerRef = useRef<HTMLOListElement>(null);
   const moving = useRef(false);
+  const holding = useRef(false);
   const slideRef = useRef(0);
   const moveTimer = useRef(0);
+  const autoTimer = useRef(0);
   const [desktop, setDesktop] = useState(false);
   const { active: cycleActive, pick } = useStepCycle(steps.length, desktop);
   const [slide, setSlide] = useState(0);
@@ -127,22 +134,25 @@ export function StepList({
   const goTo = useCallback((index: number, smooth = true) => {
     const el = scrollerRef.current;
     if (!el) return;
-    const next = Math.max(0, Math.min(el.children.length - 1, index));
+    const last = el.children.length - 1;
+    const next = Math.max(0, Math.min(last, index));
     const target = next * el.clientWidth;
     if (next === slideRef.current && Math.abs(el.scrollLeft - target) < 2) {
       return;
     }
+    // 4 → 1 em jump: o snap do trilho pega etapa no meio se o scroll for suave.
+    const wrapBack = next === 0 && slideRef.current === last && last > 0;
     moving.current = true;
     el.scrollTo({
       left: target,
-      behavior: smooth ? "smooth" : "auto",
+      behavior: !smooth || wrapBack ? "auto" : "smooth",
     });
     slideRef.current = next;
     setSlide(next);
     window.clearTimeout(moveTimer.current);
     moveTimer.current = window.setTimeout(() => {
       moving.current = false;
-    }, 380);
+    }, wrapBack ? 80 : MOBILE_MOVE_MS);
   }, []);
 
   useEffect(() => {
@@ -154,7 +164,6 @@ export function StepList({
     let startY = 0;
     let lastX = 0;
     let axis: "x" | "y" | null = null;
-    let holding = false;
 
     const width = () => el.clientWidth;
 
@@ -165,8 +174,8 @@ export function StepList({
     };
 
     const settle = () => {
-      if (!holding) return;
-      holding = false;
+      if (!holding.current) return;
+      holding.current = false;
       let next = origin;
       if (axis === "x") {
         const dx = lastX - startX;
@@ -179,7 +188,7 @@ export function StepList({
 
     const onPointerDown = (event: PointerEvent) => {
       if (event.pointerType === "mouse" && event.button !== 0) return;
-      holding = true;
+      holding.current = true;
       axis = null;
       origin = indexAt();
       startX = event.clientX;
@@ -188,7 +197,7 @@ export function StepList({
     };
 
     const onPointerMove = (event: PointerEvent) => {
-      if (!holding) return;
+      if (!holding.current) return;
       lastX = event.clientX;
       if (axis === "x") {
         event.preventDefault();
@@ -207,7 +216,7 @@ export function StepList({
           /* Safari antigo sem capture — o pointerup no elemento ainda chega. */
         }
       } else {
-        holding = false;
+        holding.current = false;
         axis = null;
       }
     };
@@ -215,7 +224,7 @@ export function StepList({
     const onPointerUp = () => settle();
 
     const onScroll = () => {
-      if (holding || moving.current) return;
+      if (holding.current || moving.current) return;
       const next = indexAt();
       if (next === slideRef.current) return;
       slideRef.current = next;
@@ -236,6 +245,7 @@ export function StepList({
     window.addEventListener("resize", onResize, { passive: true });
     return () => {
       window.clearTimeout(moveTimer.current);
+      holding.current = false;
       el.removeEventListener("pointerdown", onPointerDown);
       el.removeEventListener("pointermove", onPointerMove);
       el.removeEventListener("pointerup", onPointerUp);
@@ -244,6 +254,25 @@ export function StepList({
       window.removeEventListener("resize", onResize);
     };
   }, [desktop, goTo, total]);
+
+  useEffect(() => {
+    if (desktop || !mobileCycleMs || total < 2) return;
+    if (window.matchMedia(REDUCE_QUERY).matches) return;
+
+    const arm = () => {
+      window.clearTimeout(autoTimer.current);
+      autoTimer.current = window.setTimeout(() => {
+        if (holding.current || moving.current) {
+          arm();
+          return;
+        }
+        goTo((slideRef.current + 1) % total);
+      }, mobileCycleMs);
+    };
+
+    arm();
+    return () => window.clearTimeout(autoTimer.current);
+  }, [desktop, goTo, mobileCycleMs, slide, total]);
 
   return (
     <div>
