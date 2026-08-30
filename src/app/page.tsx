@@ -25,7 +25,7 @@ const PROBLEMS = [
   {
     kicker: "FERRAMENTA GENÉRICA",
     title: "Você se adapta ao software. Não o contrário.",
-    text: "CRM pronto, chatbot de template, automação que quebra no primeiro desvio. A regra do seu negócio fica de fora.",
+    text: "Sistemas complexos que não solucionam uma dor real.",
     image: "/assets/problems/tool.webp",
   },
 ];
