@@ -228,8 +228,6 @@ export function ForceFieldBackground({
 
           img = layer.get();
           layer.remove();
-          img.filter(p.GRAY);
-
           if (propsRef.current.invertImage) {
             img.loadPixels();
             for (let i = 0; i < img.pixels.length; i += 4) {
@@ -329,8 +327,12 @@ export function ForceFieldBackground({
             const px = p.constrain(Math.floor(x), 0, img.width - 1);
             const py = p.constrain(Math.floor(y), 0, img.height - 1);
             const index = (px + py * img.width) * 4;
-            const brightness = img.pixels[index];
-            if (brightness === undefined) continue;
+            const red = img.pixels[index];
+            const green = img.pixels[index + 1];
+            const blue = img.pixels[index + 2];
+            if (red === undefined) continue;
+            const brightness = Math.max(red, green, blue);
+            const isRedMark = red > 70 && red > green + 40 && red > blue + 40;
 
             const fillField = !props.invertWireframe && props.threshold <= 0;
             const visible = fillField
@@ -340,12 +342,13 @@ export function ForceFieldBackground({
                 : brightness > props.threshold;
             if (!visible) continue;
 
+            const mark = isRedMark ? Math.max(brightness, 235) : brightness;
             const shadeIndex = fillField
-              ? p.constrain(
-                  Math.floor(p.map(brightness, 0, 255, 5, 1)),
-                  1,
-                  5,
-                )
+              ? isRedMark
+                ? 3
+                : mark < 24
+                  ? 5
+                  : 1
               : p.constrain(
                   Math.floor(
                     p.map(brightness, 0, 255, 0, palette.length - 1),
@@ -354,7 +357,7 @@ export function ForceFieldBackground({
                   palette.length - 1,
                 );
             let strokeSize = p.map(
-              brightness,
+              mark,
               0,
               255,
               props.minStroke,
