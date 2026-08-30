@@ -29,7 +29,7 @@ export type ForceFieldBackgroundProps = {
   className?: string;
 };
 
-const SCAN_MS = 11000;
+const SCAN_MS = 18000;
 const WAVE_BAND = 92;
 
 const NODEX_SWATCHES = [
@@ -409,12 +409,12 @@ export function ForceFieldBackground({
                 const env = 1 - Math.abs(dist) / WAVE_BAND;
                 const env2 = env * env;
                 const phase =
-                  pt.originalPos.x * 0.048 + p.millis() * 0.007;
-                drawX = x + Math.sin(phase) * 26 * env2;
+                  pt.originalPos.x * 0.048 + p.millis() * 0.0035;
+                drawX = x + Math.sin(phase) * 18 * env2;
                 drawY =
                   y +
-                  Math.cos(phase * 0.72) * 10 * env2 +
-                  Math.sin((dist / WAVE_BAND) * Math.PI) * 14 * env;
+                  Math.cos(phase * 0.72) * 7 * env2 +
+                  Math.sin((dist / WAVE_BAND) * Math.PI) * 10 * env;
               }
             }
 
