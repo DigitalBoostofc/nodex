@@ -64,12 +64,12 @@ export function StepTrack({
     >
       <div
         data-nx-track-fill
-        className="absolute top-0 left-0 h-px transition-[width] duration-[980ms] ease-[cubic-bezier(.22,1,.36,1)] [background:linear-gradient(90deg,#8E0000,#E10600)]"
+        className="absolute top-0 left-0 h-px transition-[width] duration-[320ms] ease-[cubic-bezier(.2,.8,.2,1)] [background:linear-gradient(90deg,#8E0000,#E10600)]"
         style={{ width: fill }}
       />
       <div
         data-nx-track-dot
-        className="absolute top-1/2 h-[11px] w-[11px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-nx-red transition-[left] duration-[980ms] ease-[cubic-bezier(.22,1,.36,1)] [box-shadow:0_0_0_4px_rgba(225,6,0,.18)]"
+        className="absolute top-1/2 h-[11px] w-[11px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-nx-red transition-[left] duration-[320ms] ease-[cubic-bezier(.2,.8,.2,1)] [box-shadow:0_0_0_4px_rgba(225,6,0,.18)]"
         style={{ left: dot }}
       />
     </div>
@@ -99,11 +99,15 @@ export function StepList({
   intro?: ReactNode;
 }) {
   const scrollerRef = useRef<HTMLOListElement>(null);
+  const moving = useRef(false);
+  const slideRef = useRef(0);
+  const moveTimer = useRef(0);
   const [desktop, setDesktop] = useState(false);
   const { active: cycleActive, pick } = useStepCycle(steps.length, desktop);
   const [slide, setSlide] = useState(0);
   const total = steps.length;
   const active = desktop ? cycleActive : slide;
+  slideRef.current = slide;
 
   useEffect(() => {
     const mq = window.matchMedia(MD_QUERY);
@@ -121,13 +125,22 @@ export function StepList({
   const goTo = useCallback((index: number, smooth = true) => {
     const el = scrollerRef.current;
     if (!el) return;
-    const slideEl = el.children[index] as HTMLElement | undefined;
-    if (!slideEl) return;
+    const next = Math.max(0, Math.min(el.children.length - 1, index));
+    const target = next * el.clientWidth;
+    if (next === slideRef.current && Math.abs(el.scrollLeft - target) < 2) {
+      return;
+    }
+    moving.current = true;
     el.scrollTo({
-      left: index * el.clientWidth,
+      left: target,
       behavior: smooth ? "smooth" : "auto",
     });
-    setSlide(index);
+    slideRef.current = next;
+    setSlide(next);
+    window.clearTimeout(moveTimer.current);
+    moveTimer.current = window.setTimeout(() => {
+      moving.current = false;
+    }, 380);
   }, []);
 
   useEffect(() => {
@@ -159,7 +172,7 @@ export function StepList({
         else if (dx >= STEP_SWIPE_PX) next = Math.max(0, origin - 1);
       }
       axis = null;
-      goTo(next, true);
+      if (next !== origin) goTo(next, true);
     };
 
     const onPointerDown = (event: PointerEvent) => {
@@ -200,8 +213,11 @@ export function StepList({
     const onPointerUp = () => settle();
 
     const onScroll = () => {
-      if (holding) return;
-      setSlide(indexAt());
+      if (holding || moving.current) return;
+      const next = indexAt();
+      if (next === slideRef.current) return;
+      slideRef.current = next;
+      setSlide(next);
     };
 
     const onResize = () => {
@@ -217,6 +233,7 @@ export function StepList({
     el.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize, { passive: true });
     return () => {
+      window.clearTimeout(moveTimer.current);
       el.removeEventListener("pointerdown", onPointerDown);
       el.removeEventListener("pointermove", onPointerMove);
       el.removeEventListener("pointerup", onPointerUp);
@@ -298,7 +315,7 @@ export function StepList({
               className="flex h-11 w-11 items-center justify-center"
             >
               <span
-                className={`h-2 rounded-full transition-[width,background-color] duration-300 ease-[cubic-bezier(.2,.8,.2,1)] ${
+                className={`h-2 rounded-full transition-[width,background-color] duration-[320ms] ease-[cubic-bezier(.2,.8,.2,1)] ${
                   on ? "w-6 bg-nx-red" : "w-2 bg-nx-dim"
                 }`}
               />
