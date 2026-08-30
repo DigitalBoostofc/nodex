@@ -33,7 +33,7 @@ const PROBLEMS = [
 const PROCESS: Step[] = [
   {
     title: "Diagnóstico",
-    text: "Mapeamos o processo, o dado e o que conta como sucesso.",
+    text: "Mapeamos os processos, automatizamos as tarefas repetitivas e definimos o MVP.",
     output: "escopo da menor entrega que já muda o dia.",
   },
   {
