@@ -17,7 +17,7 @@ const PROBLEMS = [
     image: "/assets/problems/repeat.webp",
   },
   {
-    kicker: "NA CABEÇA DE ALGUÉM",
+    kicker: "O FULANO SABE",
     title: "O processo mora na cabeça de alguém",
     text: "Planilha, WhatsApp e “o fulano sabe”. Quando essa pessoa falta, a operação para.",
     image: "/assets/problems/head.webp",
@@ -129,14 +129,13 @@ export default function HomePage() {
         />
         <div className="relative mx-auto max-w-[1280px] px-5 py-24 md:px-8 lg:px-12">
           <SectionHead
-            eyebrow="O QUE TRAVA A OPERAÇÃO"
+            eyebrow="O QUE TRAVA A OPERAÇÃO?"
             eyebrowTone="red"
             title={
-              <span className="block max-w-[26ch]">
-                O trabalho existe. O sistema não acompanha.
+              <span className="block max-w-[16ch]">
+                Os 3 principais erros
               </span>
             }
-            lead="Três padrões que aparecem em quase toda operação antes de existir sistema."
             className="mb-14"
           />
           <ProblemRail items={PROBLEMS} />
