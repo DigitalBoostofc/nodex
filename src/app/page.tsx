@@ -148,7 +148,7 @@ export default function HomePage() {
             <SectionHead
               eyebrow="COMO TRABALHAMOS"
               title="Do diagnóstico ao sistema em produção."
-              lead="Sem mistério de escopo. Cada etapa tem saída visível."
+              lead="Sem mistério. Cada etapa tem um objetivo claro!"
               className="mb-8 px-5 md:mb-11 md:px-0"
             />
           }
