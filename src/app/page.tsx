@@ -48,7 +48,7 @@ const PROCESS: Step[] = [
   },
   {
     title: "Operação",
-    text: "Medimos o efeito, ajustamos e deixamos o time no comando.",
+    text: "Medimos o efeito, ajustamos todos os possíveis erros, e adicionamos novas funções de acordo com a necessidade do cliente.",
     output: "sistema rodando, não um protótipo na gaveta.",
   },
 ];
