@@ -100,8 +100,7 @@ export default function HomePage() {
             </h1>
             <p className="mx-auto mt-7 max-w-[46ch] text-[19px]/[1.65] font-light text-[#EDEDED] [text-shadow:0_1px_2px_rgba(0,0,0,0.9),0_0_22px_rgba(0,0,0,0.85)] lg:mx-0">
               A Nodex Labs constrói chatbots, automações e sistemas sob medida,
-              integrados ao processo que você já opera. Do primeiro diagnóstico à
-              manutenção depois de ir ao ar.
+              integrados ao processo que você já opera.
             </p>
             <div className="pointer-events-auto mt-11 flex flex-wrap justify-center gap-[14px] lg:justify-start">
               <WaLink className="nx-btn nx-btn-pill">Fale com a Nodex →</WaLink>
