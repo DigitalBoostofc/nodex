@@ -132,9 +132,8 @@ export default function HomePage() {
             eyebrow="O QUE TRAVA A OPERAÇÃO"
             eyebrowTone="red"
             title={
-              <span className="block max-w-[32ch]">
-                Três padrões que aparecem em quase toda operação antes de
-                existir sistema.
+              <span className="block max-w-[18ch]">
+                Três principais padrões de erro.
               </span>
             }
             className="mb-14"
