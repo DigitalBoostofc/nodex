@@ -149,7 +149,7 @@ export default function HomePage() {
               eyebrow="COMO TRABALHAMOS"
               title="Do diagnóstico ao sistema em produção."
               lead="Sem mistério. Cada etapa tem um objetivo claro!"
-              className="mb-8 px-5 md:mb-11 md:px-0"
+              className="mb-8 md:mb-11"
             />
           }
           steps={PROCESS}
