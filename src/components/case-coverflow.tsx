@@ -116,6 +116,7 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
                 href={item.href}
                 aria-current={on ? "true" : undefined}
                 data-pos={pos}
+                data-nx-anim={on ? "glow" : undefined}
                 className={`${className} hover:text-inherit`}
                 onClick={(event) => {
                   if (index === active) return;
@@ -133,6 +134,7 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
               key={item.title}
               type="button"
               data-pos={pos}
+              data-nx-anim={on ? "glow" : undefined}
               aria-current={on ? "true" : undefined}
               aria-label={item.title}
               className={`${className} text-left`}
