@@ -84,7 +84,7 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
                     </span>
                   ) : null}
                   {item.image ? (
-                    <div className="my-6 flex justify-center md:my-8">
+                    <div className="my-5 flex justify-center md:my-6">
                       <Image
                         src={item.image}
                         alt={`Logo ${item.title}`}
@@ -97,11 +97,11 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
                   <p className="mb-[14px] font-display text-[26px]/[1.2] font-medium tracking-[-0.01em] text-white md:text-[30px]/[1.2]">
                     {item.title}
                   </p>
-                  <p className="mb-6 text-[16px]/[1.65] font-light text-nx-muted md:mb-8 md:text-[17px]/[1.65]">
+                  <p className="text-[16px]/[1.65] font-light text-nx-muted md:text-[17px]/[1.65]">
                     {item.text}
                   </p>
                   {item.href ? (
-                    <span className="text-[14px]/[1] font-medium text-nx-red">
+                    <span className="mt-auto pt-5 text-[14px]/[1] font-medium text-nx-red">
                       Ver o case →
                     </span>
                   ) : null}
@@ -110,7 +110,7 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
             </>
           );
 
-          const className = `nx-card nx-coverflow-card absolute box-border h-[400px] w-[min(78vw,320px)] overflow-hidden p-7 md:h-[440px] md:w-[380px] md:p-[34px] ${
+          const className = `nx-card nx-coverflow-card absolute box-border flex h-[400px] w-[min(78vw,320px)] flex-col overflow-hidden px-5 pt-5 pb-9 md:h-[440px] md:w-[380px] md:px-6 md:pt-6 md:pb-11 ${
             item.kind === "ghost" ? "bg-[#050505]" : "bg-nx-surface"
           }`;
 
