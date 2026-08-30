@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 
+import { CaseCoverflow, type CaseSlide } from "@/components/case-coverflow";
 import { CtaForm } from "@/components/cta-block";
 import { FaqSection, type FaqItem } from "@/components/faq";
 import { LazyHeroForceField as HeroForceField } from "@/components/lazy-hero-force-field";
@@ -50,6 +50,30 @@ const PROCESS: Step[] = [
     title: "Operação",
     text: "Medimos o efeito, ajustamos todos os possíveis erros, e adicionamos novas funções de acordo com a necessidade do cliente.",
     output: "Sistema rodando e otimizado no menor tempo possível.",
+  },
+];
+
+const CASES: CaseSlide[] = [
+  {
+    kind: "ghost",
+    title: "Próximo lançamento",
+    text: "Espaço reservado para o próximo sistema em produção.",
+  },
+  {
+    kind: "case",
+    kicker: "HIGIENIZAÇÃO A DOMICÍLIO · SISTEMA OPERACIONAL",
+    title: "Cleanox",
+    text: "Sistema de ordens de serviço, agenda, financeiro e app do profissional para higienização a domicílio.",
+    image: "/assets/cases/cleanox.webp",
+    href: "/cases/cleanox",
+  },
+  {
+    kind: "case",
+    kicker: "OPERAÇÃO COMERCIAL · CRM",
+    title: "AppexCRM",
+    text: "CRM sob medida para a operação comercial.",
+    image: "/assets/cases/appexcrm.webp",
+    href: "/cases",
   },
 ];
 
@@ -165,58 +189,7 @@ export default function HomePage() {
           leadClassName=""
           className="mb-14"
         />
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-5">
-          <Link
-            href="/cases/cleanox"
-            className="nx-card nx-card-hover block p-[34px] hover:text-inherit"
-          >
-            <span className="font-mono text-[11px]/[1] font-medium tracking-[0.2em] text-nx-muted">
-              HIGIENIZAÇÃO A DOMICÍLIO · SISTEMA OPERACIONAL
-            </span>
-            <Image
-              src="/assets/cases/cleanox.webp"
-              alt="Logo Cleanox"
-              width={200}
-              height={200}
-              className="my-6 h-[200px] w-[200px] object-contain"
-            />
-            <p className="mb-[14px] font-display text-[30px]/[1.2] font-medium tracking-[-0.01em] text-white">
-              Cleanox
-            </p>
-            <p className="mb-6 text-[17px]/[1.65] font-light text-nx-muted">
-              Sistema de ordens de serviço, agenda, financeiro e app do
-              profissional para higienização a domicílio.
-            </p>
-            <span className="text-[14px]/[1] font-medium text-nx-red">
-              Ver o case →
-            </span>
-          </Link>
-
-          <Link
-            href="/cases"
-            className="nx-card nx-card-hover block p-[34px] hover:text-inherit"
-          >
-            <span className="font-mono text-[11px]/[1] font-medium tracking-[0.2em] text-nx-muted">
-              OPERAÇÃO COMERCIAL · CRM
-            </span>
-            <Image
-              src="/assets/cases/appexcrm.webp"
-              alt="Logo AppexCRM"
-              width={200}
-              height={200}
-              className="my-6 h-[200px] w-[200px] object-contain"
-            />
-            <p className="mb-[14px] font-display text-[30px]/[1.2] font-medium tracking-[-0.01em] text-white">
-              AppexCRM
-            </p>
-            <p className="mb-6 text-[17px]/[1.65] font-light text-nx-muted">
-              CRM sob medida para a operação comercial.
-            </p>
-            <span className="text-[14px]/[1] font-medium text-nx-red">
-              Ver o case →
-            </span>
-          </Link>
-        </div>
+        <CaseCoverflow items={CASES} />
       </Section>
 
       <CtaForm
