@@ -185,7 +185,7 @@ export default function HomePage() {
           eyebrow="EM PRODUÇÃO"
           eyebrowTone="red"
           title="Sistemas que já rodam de verdade."
-          className="mb-14"
+          className="mb-14 text-center"
         />
         <CaseCoverflow items={CASES} />
       </Section>
