@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 
+import { CarouselNav } from "./carousel-nav";
+
 const STEP_SWIPE_PX = 36;
 
 export type CaseSlide = {
@@ -230,73 +232,15 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
         })}
       </div>
 
-      <div className="relative z-40 mt-6 flex items-center justify-center gap-6 md:mt-8">
-        <button
-          type="button"
-          aria-label="Case anterior"
-          disabled={active === 0}
-          onClick={() => step(-1)}
-          className="grid size-11 place-items-center rounded-full border border-[#333] text-nx-muted transition-colors duration-160 hover:border-nx-red hover:text-nx-red disabled:pointer-events-none disabled:opacity-30"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
-          >
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-        </button>
-
-        <div className="flex items-center gap-2">
-          {items.map((item, index) => {
-            const on = index === active;
-            return (
-              <button
-                key={item.title}
-                type="button"
-                aria-label={`Ver ${item.title}`}
-                aria-current={on ? "true" : undefined}
-                onClick={() => goTo(index)}
-                className="grid size-11 place-items-center"
-              >
-                <span
-                  className={`h-2 rounded-full transition-[width,background-color] duration-300 ease-[cubic-bezier(.2,.8,.2,1)] ${
-                    on ? "w-6 bg-nx-red" : "w-2 bg-nx-dim"
-                  }`}
-                />
-              </button>
-            );
-          })}
-        </div>
-
-        <button
-          type="button"
-          aria-label="Próximo case"
-          disabled={active === last}
-          onClick={() => step(1)}
-          className="grid size-11 place-items-center rounded-full border border-[#333] text-nx-muted transition-colors duration-160 hover:border-nx-red hover:text-nx-red disabled:pointer-events-none disabled:opacity-30"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
-          >
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </button>
-      </div>
+      <CarouselNav
+        count={items.length}
+        active={active}
+        onGo={goTo}
+        labelFor={(index) => `Ver ${items[index].title}`}
+        prevLabel="Case anterior"
+        nextLabel="Próximo case"
+        className="mt-6 md:mt-8"
+      />
     </div>
   );
 }

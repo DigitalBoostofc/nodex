@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { CarouselNav } from "./carousel-nav";
+
 const INTERVAL_MS = 10000;
 const MD_QUERY = "(min-width: 768px)";
 const REDUCE_QUERY = "(prefers-reduced-motion: reduce)";
@@ -149,27 +151,15 @@ export function ProblemRail({ items }: { items: readonly Problem[] }) {
         ))}
       </ul>
 
-      <div className="mt-6 flex justify-center md:hidden">
-        {items.map((problem, index) => {
-          const on = active === index;
-          return (
-            <button
-              key={problem.title}
-              type="button"
-              aria-label={`Ver ${problem.kicker.toLowerCase()}`}
-              aria-current={on ? "true" : undefined}
-              onClick={() => goTo(index)}
-              className="flex h-11 w-11 items-center justify-center"
-            >
-              <span
-                className={`h-2 rounded-full transition-[width,background-color] duration-300 ease-[cubic-bezier(.2,.8,.2,1)] ${
-                  on ? "w-6 bg-nx-red" : "w-2 bg-nx-dim"
-                }`}
-              />
-            </button>
-          );
-        })}
-      </div>
+      <CarouselNav
+        count={items.length}
+        active={active}
+        onGo={(index) => goTo(index)}
+        labelFor={(index) => `Ver ${items[index].kicker.toLowerCase()}`}
+        prevLabel="Problema anterior"
+        nextLabel="Próximo problema"
+        className="mt-6 md:hidden"
+      />
     </div>
   );
 }

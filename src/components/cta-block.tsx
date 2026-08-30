@@ -14,7 +14,10 @@ export function CtaForm({
   leadClassName?: string;
 }) {
   return (
-    <section className="relative overflow-hidden border-t border-nx-border-soft">
+    <section
+      id="contato"
+      className="relative overflow-hidden border-t border-nx-border-soft"
+    >
       <CtaGlow at="30%" strength={0.3} />
       <div className="relative mx-auto grid max-w-[1280px] grid-cols-1 items-start gap-14 px-5 py-28 md:px-8 lg:grid-cols-2 lg:items-stretch lg:px-12">
         <div className="flex flex-col">

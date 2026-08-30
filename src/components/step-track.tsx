@@ -8,6 +8,8 @@ import {
   type ReactNode,
 } from "react";
 
+import { CarouselNav } from "./carousel-nav";
+
 const CYCLE_MS = 2600;
 const MD_QUERY = "(min-width: 768px)";
 const REDUCE_QUERY = "(prefers-reduced-motion: reduce)";
@@ -301,31 +303,22 @@ export function StepList({
           );
         })}
       </ol>
-      <div className="mt-6 flex justify-center md:hidden motion-reduce:hidden">
-        {steps.map((step, index) => {
-          const on = active === index;
-          const label = step.title ?? `etapa ${index + 1}`;
-          return (
-            <button
-              key={step.text}
-              type="button"
-              aria-label={`Ver ${label.toLowerCase()}`}
-              aria-current={on ? "true" : undefined}
-              onClick={() => goTo(index)}
-              className="flex h-11 w-11 items-center justify-center"
-            >
-              <span
-                className={`h-2 rounded-full transition-[width,background-color] duration-[320ms] ease-[cubic-bezier(.2,.8,.2,1)] ${
-                  on ? "w-6 bg-nx-red" : "w-2 bg-nx-dim"
-                }`}
-              />
-            </button>
-          );
-        })}
+      <CarouselNav
+        count={steps.length}
+        active={active}
+        onGo={(index) => goTo(index)}
+        labelFor={(index) =>
+          `Ver ${(steps[index].title ?? `etapa ${index + 1}`).toLowerCase()}`
+        }
+        prevLabel="Etapa anterior"
+        nextLabel="Próxima etapa"
+        className="mt-6 md:hidden motion-reduce:hidden"
+      />
+      <div className="mt-8 flex justify-center md:hidden">
+        <a href="#contato" className="nx-btn nx-btn-pill">
+          Solicitar sistema
+        </a>
       </div>
-      <p className="nx-label mt-3 text-center text-[11px] tracking-[0.18em] text-nx-dim md:hidden motion-reduce:hidden">
-        ARRASTE PARA A PRÓXIMA ETAPA
-      </p>
     </div>
   );
 }
