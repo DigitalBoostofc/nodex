@@ -52,7 +52,7 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
   return (
     <div>
       <div
-        className="nx-coverflow relative mx-auto flex h-[460px] w-full max-w-[1000px] items-center justify-center pb-8 md:h-[520px] md:pb-10"
+        className="nx-coverflow relative mx-auto flex h-[420px] w-full max-w-[1000px] items-center justify-center md:h-[460px]"
         aria-roledescription="carrossel"
         aria-label="Cases em produção"
         tabIndex={0}
@@ -146,7 +146,7 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
         })}
       </div>
 
-      <div className="relative z-40 mt-16 flex items-center justify-center gap-6 md:mt-20">
+      <div className="relative z-40 mt-6 flex items-center justify-center gap-6 md:mt-8">
         <button
           type="button"
           aria-label="Case anterior"
