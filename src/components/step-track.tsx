@@ -11,7 +11,7 @@ import {
 const CYCLE_MS = 2600;
 const MD_QUERY = "(min-width: 768px)";
 const REDUCE_QUERY = "(prefers-reduced-motion: reduce)";
-const STEP_SWIPE_PX = 36;
+const STEP_SWIPE_PX = 16;
 
 /**
  * Percorre os passos sozinho para que a etapa em destaque se explique sem
@@ -137,10 +137,9 @@ export function StepList({
     let origin = 0;
     let startX = 0;
     let startY = 0;
+    let lastX = 0;
     let axis: "x" | "y" | null = null;
     let holding = false;
-    let locking = false;
-    let settleTimer = 0;
 
     const width = () => el.clientWidth;
 
@@ -150,56 +149,43 @@ export function StepList({
       return Math.max(0, Math.min(total - 1, Math.round(left / w)));
     };
 
-    const clampToNeighbors = () => {
-      const w = width();
-      if (w <= 0) return;
-      const min = Math.max(0, origin - 1) * w;
-      const max = Math.min(total - 1, origin + 1) * w;
-      if (el.scrollLeft < min) el.scrollLeft = min;
-      if (el.scrollLeft > max) el.scrollLeft = max;
-    };
-
     const settle = () => {
       if (!holding) return;
       holding = false;
-      const w = width();
       let next = origin;
       if (axis === "x") {
-        const dx = el.scrollLeft - origin * w;
-        const threshold = Math.min(STEP_SWIPE_PX, w * 0.12);
-        if (dx > threshold) next = Math.min(total - 1, origin + 1);
-        else if (dx < -threshold) next = Math.max(0, origin - 1);
+        const dx = lastX - startX;
+        if (dx <= -STEP_SWIPE_PX) next = Math.min(total - 1, origin + 1);
+        else if (dx >= STEP_SWIPE_PX) next = Math.max(0, origin - 1);
       }
       axis = null;
-      locking = true;
-      el.style.scrollSnapType = "none";
-      el.style.overflowX = "hidden";
-      goTo(next, false);
-      window.clearTimeout(settleTimer);
-      settleTimer = window.setTimeout(() => {
-        el.style.overflowX = "";
-        el.style.scrollSnapType = "";
-        locking = false;
-      }, 180);
+      goTo(next, true);
     };
 
     const onPointerDown = (event: PointerEvent) => {
       if (event.pointerType === "mouse" && event.button !== 0) return;
       holding = true;
-      locking = false;
       axis = null;
       origin = indexAt();
       startX = event.clientX;
       startY = event.clientY;
+      lastX = event.clientX;
     };
 
     const onPointerMove = (event: PointerEvent) => {
-      if (!holding || axis) return;
+      if (!holding) return;
+      lastX = event.clientX;
+      if (axis === "x") {
+        event.preventDefault();
+        return;
+      }
+      if (axis) return;
       const dx = event.clientX - startX;
       const dy = event.clientY - startY;
       if (Math.max(Math.abs(dx), Math.abs(dy)) < STEP_SWIPE_PX) return;
       axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
       if (axis === "x") {
+        event.preventDefault();
         try {
           el.setPointerCapture(event.pointerId);
         } catch {
@@ -214,7 +200,7 @@ export function StepList({
     const onPointerUp = () => settle();
 
     const onScroll = () => {
-      if (holding || locking) clampToNeighbors();
+      if (holding) return;
       setSlide(indexAt());
     };
 
@@ -225,15 +211,12 @@ export function StepList({
     };
 
     el.addEventListener("pointerdown", onPointerDown);
-    el.addEventListener("pointermove", onPointerMove);
+    el.addEventListener("pointermove", onPointerMove, { passive: false });
     el.addEventListener("pointerup", onPointerUp);
     el.addEventListener("pointercancel", onPointerUp);
     el.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize, { passive: true });
     return () => {
-      window.clearTimeout(settleTimer);
-      el.style.scrollSnapType = "";
-      el.style.overflowX = "";
       el.removeEventListener("pointerdown", onPointerDown);
       el.removeEventListener("pointermove", onPointerMove);
       el.removeEventListener("pointerup", onPointerUp);
@@ -249,7 +232,7 @@ export function StepList({
       <StepTrack total={total} active={active} className="mb-8 md:mb-10" />
       <ol
         ref={scrollerRef}
-        className="flex w-full min-w-0 snap-x snap-mandatory overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:grid-cols-[repeat(auto-fit,minmax(240px,1fr))] md:gap-8 md:overflow-visible md:snap-none [&::-webkit-scrollbar]:hidden motion-reduce:max-md:grid motion-reduce:max-md:grid-cols-1 motion-reduce:max-md:gap-8 motion-reduce:max-md:overflow-visible motion-reduce:max-md:snap-none"
+        className="flex w-full min-w-0 snap-x snap-mandatory overflow-x-auto overscroll-x-contain touch-pan-y [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:grid-cols-[repeat(auto-fit,minmax(240px,1fr))] md:gap-8 md:overflow-visible md:snap-none md:touch-auto [&::-webkit-scrollbar]:hidden motion-reduce:max-md:grid motion-reduce:max-md:grid-cols-1 motion-reduce:max-md:gap-8 motion-reduce:max-md:overflow-visible motion-reduce:max-md:snap-none"
       >
         {steps.map((step, index) => {
           const on = active === index;
@@ -261,7 +244,7 @@ export function StepList({
               onFocus={pick(index)}
               tabIndex={0}
               aria-current={on ? "step" : undefined}
-              className={`w-full max-w-full shrink-0 basis-full snap-start max-md:snap-always transition-opacity duration-[320ms] ease-[cubic-bezier(.2,.8,.2,1)] md:w-auto md:max-w-none md:basis-auto md:shrink motion-reduce:max-md:w-auto motion-reduce:max-md:max-w-none motion-reduce:max-md:basis-auto motion-reduce:max-md:shrink ${
+              className={`w-full max-w-full shrink-0 basis-full snap-start transition-opacity duration-[320ms] ease-[cubic-bezier(.2,.8,.2,1)] md:w-auto md:max-w-none md:basis-auto md:shrink motion-reduce:max-md:w-auto motion-reduce:max-md:max-w-none motion-reduce:max-md:basis-auto motion-reduce:max-md:shrink ${
                 on ? "opacity-100" : "md:opacity-45"
               }`}
             >
