@@ -290,8 +290,16 @@ export function ForceFieldBackground({
               if (red === undefined) continue;
               const brightness = Math.max(red, green, blue);
               const isRedMark =
-                red > 70 && red > green + 40 && red > blue + 40;
-              if (fillField && !isRedMark && brightness < 24) continue;
+                red > 55 &&
+                red > green + 18 &&
+                red > blue + 18 &&
+                red > green * 1.15;
+              const isWhiteMark =
+                brightness >= 140 &&
+                green >= red * 0.72 &&
+                blue >= red * 0.72 &&
+                Math.abs(green - blue) < 40;
+              if (fillField && !isRedMark && !isWhiteMark) continue;
 
               const visible = fillField
                 ? true
@@ -304,9 +312,7 @@ export function ForceFieldBackground({
               const shadeIndex = fillField
                 ? isRedMark
                   ? 3
-                  : mark < 24
-                    ? 5
-                    : 1
+                  : 1
                 : Math.max(
                     0,
                     Math.min(
