@@ -17,7 +17,7 @@ const PROBLEMS = [
     image: "/assets/problems/repeat.webp",
   },
   {
-    kicker: "NA CABEÇA DE ALGUÉM",
+    kicker: "O FULANO SABE",
     title: "O processo mora na cabeça de alguém",
     text: "Planilha, WhatsApp e “o fulano sabe”. Quando essa pessoa falta, a operação para.",
     image: "/assets/problems/head.webp",
