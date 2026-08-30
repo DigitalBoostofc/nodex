@@ -52,7 +52,7 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
   return (
     <div>
       <div
-        className="nx-coverflow relative mx-auto flex h-[420px] w-full max-w-[1000px] items-center justify-center md:h-[500px]"
+        className="nx-coverflow relative mx-auto flex h-[460px] w-full max-w-[1000px] items-center justify-center pb-8 md:h-[520px] md:pb-10"
         aria-roledescription="carrossel"
         aria-label="Cases em produção"
         tabIndex={0}
@@ -110,7 +110,7 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
             </>
           );
 
-          const className = `nx-card nx-coverflow-card absolute min-h-[340px] w-[min(78vw,320px)] p-7 md:min-h-[420px] md:w-[380px] md:p-[34px] ${
+          const className = `nx-card nx-coverflow-card absolute box-border h-[400px] w-[min(78vw,320px)] overflow-hidden p-7 md:h-[440px] md:w-[380px] md:p-[34px] ${
             item.kind === "ghost" ? "bg-[#050505]" : "bg-nx-surface"
           }`;
 
@@ -149,7 +149,7 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
         })}
       </div>
 
-      <div className="mt-10 flex items-center justify-center gap-6 md:mt-12">
+      <div className="relative z-40 mt-16 flex items-center justify-center gap-6 md:mt-20">
         <button
           type="button"
           aria-label="Case anterior"
