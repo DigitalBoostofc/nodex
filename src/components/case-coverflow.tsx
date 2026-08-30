@@ -58,7 +58,6 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
         tabIndex={0}
         onKeyDown={onStageKey}
       >
-        <div aria-hidden className="nx-coverflow-glow" />
         {items.map((item, index) => {
           const pos = positionFor(index - active);
           const on = index === active;
