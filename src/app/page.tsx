@@ -44,7 +44,7 @@ const PROCESS: Step[] = [
   {
     title: "Construção",
     text: "Código em produção, com teste e acompanhamento desde o primeiro dia.",
-    output: "versão usável.",
+    output: "MVP em produção.",
   },
   {
     title: "Operação",
