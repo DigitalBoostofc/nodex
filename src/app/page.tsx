@@ -221,7 +221,16 @@ export default function HomePage() {
 
       <CtaForm
         title="Você já sabe onde trava. A gente desenha como destrava."
-        lead="Preencha o formulário abaixo agora mesmo!"
+        lead={
+          <>
+            <span className="lg:hidden">
+              Preencha o formulário abaixo agora mesmo!
+            </span>
+            <span className="hidden lg:inline">
+              Preencha o formulário agora mesmo!
+            </span>
+          </>
+        }
       />
 
       <FaqSection items={FAQ} />
