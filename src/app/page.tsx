@@ -110,7 +110,7 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-          <div className="relative z-0 -mt-2 aspect-[350/228] w-[min(86vw,380px)] lg:pointer-events-auto lg:absolute lg:inset-0 lg:z-0 lg:mt-0 lg:aspect-auto lg:h-full lg:w-full lg:max-w-none">
+          <div className="relative z-0 mt-5 aspect-[350/228] w-[min(86vw,380px)] lg:pointer-events-auto lg:absolute lg:inset-0 lg:z-0 lg:mt-0 lg:aspect-auto lg:h-full lg:w-full lg:max-w-none">
             <HeroForceField />
           </div>
           <p className="relative z-10 mt-5 w-full max-w-[36rem] font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-[#D0D0D0] [text-shadow:0_1px_10px_rgba(0,0,0,0.95),0_0_20px_rgba(0,0,0,0.9)] lg:mt-11 lg:max-w-[38rem]">
