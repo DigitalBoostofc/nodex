@@ -207,23 +207,20 @@ export function ForceFieldBackground({
           layer.pixelDensity(1);
           layer.background(0);
 
-          const sx = originalImg.width * 0.1;
-          const sy = originalImg.height * 0.08;
-          const sw = originalImg.width * 0.8;
-          const sh = originalImg.height * 0.84;
-          const cover = Math.max(p.width / sw, p.height / sh) * 1.2;
-          const drawW = sw * cover;
-          const drawH = sh * cover;
+          const maxW = p.width * 0.6;
+          const maxH = p.height * 0.6;
+          const scale = Math.min(
+            maxW / originalImg.width,
+            maxH / originalImg.height,
+          );
+          const drawW = originalImg.width * scale;
+          const drawH = originalImg.height * scale;
           layer.image(
             originalImg,
             (p.width - drawW) / 2,
             (p.height - drawH) / 2,
             drawW,
             drawH,
-            sx,
-            sy,
-            sw,
-            sh,
           );
 
           img = layer.get();
@@ -296,7 +293,7 @@ export function ForceFieldBackground({
 
         p.draw = () => {
           if (!img) return;
-          p.background(0);
+          p.clear();
 
           const props = propsRef.current;
 
@@ -396,7 +393,7 @@ export function ForceFieldBackground({
     <div
       ref={containerRef}
       aria-hidden
-      className={`relative h-full w-full overflow-hidden bg-black [&_canvas]:block [&_canvas]:h-full [&_canvas]:w-full ${className}`}
+      className={`relative h-full w-full overflow-hidden bg-transparent [&_canvas]:block [&_canvas]:h-full [&_canvas]:w-full ${className}`}
     >
       {error ? (
         <p className="absolute inset-0 flex items-center justify-center font-mono text-[11px] tracking-[0.18em] text-nx-red/70 uppercase">
