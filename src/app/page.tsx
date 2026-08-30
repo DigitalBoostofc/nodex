@@ -181,12 +181,14 @@ export default function HomePage() {
       </Section>
 
       <Section>
-        <SectionHead
-          eyebrow="EM PRODUÇÃO"
-          eyebrowTone="red"
-          title="Sistemas que já rodam de verdade."
-          className="mb-14 text-center"
-        />
+        <div className="mb-14 text-center">
+          <span className="inline-block rounded-full border border-nx-border-warm bg-[#0B0505] px-[18px] py-3 font-mono text-[11px]/[1] font-medium tracking-[0.2em] text-nx-red-hover">
+            EM PRODUÇÃO
+          </span>
+          <h2 className="nx-h2 mt-[26px] mb-0">
+            Sistemas que já rodam de verdade.
+          </h2>
+        </div>
         <CaseCoverflow items={CASES} />
       </Section>
 
