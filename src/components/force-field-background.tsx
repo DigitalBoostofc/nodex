@@ -123,8 +123,6 @@ export function ForceFieldBackground({
     let imgH = 0;
     let pointsByShade: Particle[][] = NODEX_SWATCHES.map(() => []);
     let scanLineEls: Element[] | null = null;
-    let idleId = 0;
-    const hasIdle = "requestIdleCallback" in window;
 
     function size() {
       if (!node) return { w: 0, h: 0 };
@@ -135,7 +133,7 @@ export function ForceFieldBackground({
     }
 
     function buildPoints() {
-      if (!canvas || !source || !pixels) return;
+      if (!canvas || !source) return;
       const props = propsRef.current;
       const { w, h } = size();
       if (w < 2 || h < 2) return;
@@ -241,7 +239,8 @@ export function ForceFieldBackground({
       if (!canvas || !node) return;
       const { w, h } = size();
       if (w < 2 || h < 2) return;
-      if (canvas.width === w && canvas.height === h && pixels) return;
+      const hasPoints = pointsByShade.some((bucket) => bucket.length > 0);
+      if (canvas.width === w && canvas.height === h && hasPoints) return;
       canvas.width = w;
       canvas.height = h;
       buildPoints();
@@ -325,13 +324,15 @@ export function ForceFieldBackground({
         return;
       }
       node.appendChild(canvas);
+      const { w, h } = size();
+      canvas.width = Math.max(1, w);
+      canvas.height = Math.max(1, h);
 
       const img = new Image();
       img.decoding = "async";
       img.onload = () => {
         if (cancelled) return;
         source = img;
-        pixels = new Uint8ClampedArray(0);
         relayout();
         raf = requestAnimationFrame(draw);
       };
@@ -346,28 +347,10 @@ export function ForceFieldBackground({
       observer.observe(node);
     }
 
-    const boot = () => {
-      if (cancelled) return;
-      if (hasIdle) {
-        idleId = requestIdleCallback(start, { timeout: 1800 });
-      } else {
-        idleId = window.setTimeout(start, 200);
-      }
-    };
-    if (document.readyState === "complete") {
-      boot();
-    } else {
-      window.addEventListener("load", boot, { once: true });
-    }
+    start();
 
     return () => {
       cancelled = true;
-      window.removeEventListener("load", boot);
-      if (hasIdle) {
-        cancelIdleCallback(idleId);
-      } else {
-        window.clearTimeout(idleId);
-      }
       cancelAnimationFrame(raf);
       observer?.disconnect();
       canvas?.remove();
