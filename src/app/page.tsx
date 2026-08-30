@@ -38,7 +38,7 @@ const PROCESS: Step[] = [
   },
   {
     title: "Desenho",
-    text: "Arquitetura, telas e regras antes de escrever o que não precisa existir.",
+    text: "Arquitetura, telas e regras evitando retrabalho.",
     output: "plano fechado.",
   },
   {
