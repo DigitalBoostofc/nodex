@@ -24,8 +24,8 @@ const PROBLEMS = [
   },
   {
     kicker: "FERRAMENTA GENÉRICA",
-    title: "Ferramenta pronta não cabe no seu jeito de vender",
-    text: "CRM genérico, chatbot de template, automação que quebra no segundo desvio. Você se adapta ao software, e não o contrário.",
+    title: "Você se adapta ao software. Não o contrário.",
+    text: "Sistemas complexos que não solucionam uma dor real.",
     image: "/assets/problems/tool.webp",
   },
 ];
@@ -33,23 +33,23 @@ const PROBLEMS = [
 const PROCESS: Step[] = [
   {
     title: "Diagnóstico",
-    text: "Mapeamos o processo, o dado e o que conta como sucesso.",
-    output: "escopo da menor entrega que já muda o dia.",
+    text: "Mapeamos os processos, automatizamos as tarefas repetitivas e definimos o MVP.",
+    output: "escopo da menor entrega que já muda o jogo.",
   },
   {
     title: "Desenho",
-    text: "Arquitetura, telas e regras antes de escrever o que não precisa existir.",
+    text: "Arquitetura, telas e regras evitando retrabalho.",
     output: "plano fechado.",
   },
   {
     title: "Construção",
     text: "Código em produção, com teste e acompanhamento desde o primeiro dia.",
-    output: "versão usável.",
+    output: "MVP em produção.",
   },
   {
     title: "Operação",
-    text: "Medimos o efeito, ajustamos e deixamos o time no comando.",
-    output: "sistema rodando, não um protótipo na gaveta.",
+    text: "Medimos o efeito, ajustamos todos os possíveis erros, e adicionamos novas funções de acordo com a necessidade do cliente.",
+    output: "Sistema rodando e otimizado no menor tempo possível.",
   },
 ];
 
@@ -148,7 +148,7 @@ export default function HomePage() {
             <SectionHead
               eyebrow="COMO TRABALHAMOS"
               title="Do diagnóstico ao sistema em produção."
-              lead="Sem mistério de escopo. Cada etapa tem saída visível."
+              lead="Sem mistério. Cada etapa tem um objetivo claro!"
               className="mb-8 px-5 md:mb-11 md:px-0"
             />
           }
@@ -220,8 +220,22 @@ export default function HomePage() {
       </Section>
 
       <CtaForm
-        title="Conte o problema. A gente responde com um plano."
-        lead="Formulário curto. Retorno em um dia útil."
+        title={
+          <>
+            Você já sabe onde trava.{" "}
+            <span className="text-nx-red">A gente te mostra como destravar.</span>
+          </>
+        }
+        lead={
+          <>
+            <span className="lg:hidden">
+              Preencha o formulário abaixo agora mesmo!
+            </span>
+            <span className="hidden lg:inline">
+              Preencha o formulário agora mesmo!
+            </span>
+          </>
+        }
       />
 
       <FaqSection items={FAQ} />
