@@ -238,12 +238,16 @@
   }
 
   @media (max-width: 767px) {
+    .nx-coverflow {
+      overflow: hidden;
+    }
+
     .nx-coverflow-card[data-pos="prev"] {
-      transform: translateX(-68%) translateZ(-60px) rotateY(28deg);
+      transform: translateX(-36%) translateZ(-40px) rotateY(22deg);
     }
 
     .nx-coverflow-card[data-pos="next"] {
-      transform: translateX(68%) translateZ(-60px) rotateY(-28deg);
+      transform: translateX(36%) translateZ(-40px) rotateY(-22deg);
     }
   }
 

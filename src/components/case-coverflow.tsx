@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
+
+const STEP_SWIPE_PX = 36;
 
 export type CaseSlide = {
   kind: "ghost" | "case";
@@ -24,6 +26,10 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
   const firstCase = items.findIndex((item) => item.kind === "case");
   const [active, setActive] = useState(firstCase >= 0 ? firstCase : 0);
   const last = items.length - 1;
+  const stageRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef(active);
+  const swiped = useRef(false);
+  activeRef.current = active;
 
   const goTo = useCallback(
     (index: number) => {
@@ -34,9 +40,9 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
 
   const step = useCallback(
     (dir: -1 | 1) => {
-      goTo(active + dir);
+      goTo(activeRef.current + dir);
     },
-    [active, goTo],
+    [goTo],
   );
 
   const onStageKey = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -49,10 +55,84 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
     }
   };
 
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+
+    let startX = 0;
+    let startY = 0;
+    let lastX = 0;
+    let axis: "x" | "y" | null = null;
+    let holding = false;
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      holding = true;
+      swiped.current = false;
+      axis = null;
+      startX = event.clientX;
+      startY = event.clientY;
+      lastX = event.clientX;
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (!holding) return;
+      lastX = event.clientX;
+      if (axis) {
+        if (axis === "x") event.preventDefault();
+        return;
+      }
+      const dx = event.clientX - startX;
+      const dy = event.clientY - startY;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < STEP_SWIPE_PX) return;
+      axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+      if (axis === "x") {
+        event.preventDefault();
+        try {
+          el.setPointerCapture(event.pointerId);
+        } catch {
+          /* Safari antigo sem capture */
+        }
+      } else {
+        holding = false;
+      }
+    };
+
+    const onPointerUp = () => {
+      if (!holding) return;
+      holding = false;
+      if (axis !== "x") {
+        axis = null;
+        return;
+      }
+      const dx = lastX - startX;
+      if (dx <= -STEP_SWIPE_PX) {
+        swiped.current = true;
+        step(1);
+      } else if (dx >= STEP_SWIPE_PX) {
+        swiped.current = true;
+        step(-1);
+      }
+      axis = null;
+    };
+
+    el.addEventListener("pointerdown", onPointerDown);
+    el.addEventListener("pointermove", onPointerMove, { passive: false });
+    el.addEventListener("pointerup", onPointerUp);
+    el.addEventListener("pointercancel", onPointerUp);
+    return () => {
+      el.removeEventListener("pointerdown", onPointerDown);
+      el.removeEventListener("pointermove", onPointerMove);
+      el.removeEventListener("pointerup", onPointerUp);
+      el.removeEventListener("pointercancel", onPointerUp);
+    };
+  }, [step]);
+
   return (
-    <div>
+    <div className="overflow-x-clip">
       <div
-        className="nx-coverflow relative mx-auto flex h-[420px] w-full max-w-[1000px] items-center justify-center md:h-[460px]"
+        ref={stageRef}
+        className="nx-coverflow relative mx-auto flex h-[420px] w-full max-w-[1000px] touch-pan-y items-center justify-center md:h-[460px]"
         aria-roledescription="carrossel"
         aria-label="Cases em produção"
         tabIndex={0}
@@ -119,6 +199,10 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
                 data-nx-anim={on ? "glow" : undefined}
                 className={`${className} hover:text-inherit`}
                 onClick={(event) => {
+                  if (swiped.current) {
+                    event.preventDefault();
+                    return;
+                  }
                   if (index === active) return;
                   event.preventDefault();
                   goTo(index);

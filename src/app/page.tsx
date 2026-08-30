@@ -180,7 +180,7 @@ export default function HomePage() {
         />
       </Section>
 
-      <Section>
+      <Section className="overflow-x-clip">
         <div className="mb-14 text-center">
           <span className="inline-block rounded-full border border-nx-border-warm bg-[#0B0505] px-[18px] py-3 font-mono text-[11px]/[1] font-medium tracking-[0.2em] text-nx-red-hover">
             EM PRODUÇÃO
