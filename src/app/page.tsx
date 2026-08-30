@@ -185,8 +185,6 @@ export default function HomePage() {
           eyebrow="EM PRODUÇÃO"
           eyebrowTone="red"
           title="Sistemas que já rodam de verdade."
-          lead="Não é deck. É operação."
-          leadClassName=""
           className="mb-14"
         />
         <CaseCoverflow items={CASES} />
