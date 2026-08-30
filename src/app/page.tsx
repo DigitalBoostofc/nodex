@@ -24,8 +24,8 @@ const PROBLEMS = [
   },
   {
     kicker: "FERRAMENTA GENÉRICA",
-    title: "Ferramenta pronta não cabe no seu jeito de vender",
-    text: "CRM genérico, chatbot de template, automação que quebra no segundo desvio. Você se adapta ao software, e não o contrário.",
+    title: "Você se adapta ao software. Não o contrário.",
+    text: "CRM pronto, chatbot de template, automação que quebra no primeiro desvio. A regra do seu negócio fica de fora.",
     image: "/assets/problems/tool.webp",
   },
 ];
