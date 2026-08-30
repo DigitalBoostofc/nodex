@@ -220,8 +220,8 @@ export default function HomePage() {
       </Section>
 
       <CtaForm
-        title="Conte o problema. A gente responde com um plano."
-        lead="Formulário curto. Retorno em um dia útil."
+        title="Você já sabe onde trava. A gente desenha como destrava."
+        lead="Preencha o formulário abaixo que a gente entra em contato."
       />
 
       <FaqSection items={FAQ} />
