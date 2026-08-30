@@ -233,7 +233,7 @@ export function ForceFieldBackground({
           // Overlay (desktop, full hero) vs contained slot (mobile, ~square).
           const overlay = p.width >= 720;
           const fraction =
-            propsRef.current.markScale ?? (overlay ? 0.6 : 0.9);
+            propsRef.current.markScale ?? (overlay ? 0.6 : 1.22);
           const maxW = p.width * fraction;
           const maxH = p.height * fraction;
           const scale = Math.min(
@@ -248,13 +248,11 @@ export function ForceFieldBackground({
             align === "right"
               ? Math.max(p.width * 0.36, p.width - drawW - p.width * 0.1)
               : (p.width - drawW) / 2;
-          layer.image(
-            originalImg,
-            drawX,
-            (p.height - drawH) / 2,
-            drawW,
-            drawH,
-          );
+          // Contained slot: crop the PNG's top pad so the mark hugs the CTAs.
+          const drawY = overlay
+            ? (p.height - drawH) / 2
+            : -drawH * 0.21;
+          layer.image(originalImg, drawX, drawY, drawW, drawH);
 
           img = layer.get();
           layer.remove();
