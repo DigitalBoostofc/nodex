@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { CtaGlow } from "./ui";
-import { WaLink } from "./wa-link";
 
 /**
  * Bloco de fechamento centralizado: uma pergunta, uma linha de apoio e o par
@@ -32,7 +31,9 @@ export function CtaButtons({
           <p className="nx-body-l mx-auto mb-9 max-w-[52ch]">{lead}</p>
         ) : null}
         <div className="mt-9 flex flex-wrap justify-center gap-[14px]">
-          <WaLink className="nx-btn">Fale com a Nodex</WaLink>
+          <Link href="/contato" className="nx-btn">
+            Fale com a Nodex
+          </Link>
           <Link href={secondaryHref} className="nx-btn-ghost">
             {secondaryLabel}
           </Link>

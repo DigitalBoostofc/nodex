@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { ContactForm } from "@/components/contact-form";
 import { HeroBackdrop, Section } from "@/components/ui";
-import { EMAIL, PHONE_DISPLAY } from "@/lib/site";
+import { EMAIL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contato",
@@ -44,9 +44,6 @@ export default function ContatoPage() {
               próximo passo, ou com a pergunta que falta.
             </p>
             <div className="flex flex-col gap-[14px] border-t border-nx-border pt-8">
-              <span className="font-mono text-[14px]/[1.5] text-nx-muted">
-                WHATSAPP · <span className="text-nx-red">{PHONE_DISPLAY}</span>
-              </span>
               <span className="font-mono text-[14px]/[1.5] text-nx-muted">
                 E-MAIL ·{" "}
                 <a href={`mailto:${EMAIL}`} className="text-nx-red">

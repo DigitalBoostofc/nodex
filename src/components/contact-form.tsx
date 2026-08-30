@@ -191,7 +191,7 @@ export function ContactForm({ compact = false }: { compact?: boolean }) {
           role="alert"
           className="text-[14px]/[1.5] font-light text-nx-red-hover"
         >
-          Não conseguimos enviar agora. Tente de novo ou chame no WhatsApp.
+          Não conseguimos enviar agora. Tente de novo.
         </p>
       ) : null}
 

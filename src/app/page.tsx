@@ -7,7 +7,7 @@ import { LazyHeroForceField as HeroForceField } from "@/components/lazy-hero-for
 import { ProblemRail } from "@/components/problem-rail";
 import { StepList, type Step } from "@/components/step-track";
 import { HeroBackdrop, HeroPill, Section, SectionHead } from "@/components/ui";
-import { WaLink } from "@/components/wa-link";
+
 
 const PROBLEMS = [
   {
@@ -127,7 +127,9 @@ export default function HomePage() {
               integrados ao processo que você já opera.
             </p>
             <div className="pointer-events-auto mt-11 flex flex-wrap justify-center gap-[14px] lg:justify-start">
-              <WaLink className="nx-btn nx-btn-pill">Fale com a Nodex →</WaLink>
+              <Link href="#contato" className="nx-btn nx-btn-pill">
+                Fale com a Nodex →
+              </Link>
               <Link href="/solucoes" className="nx-btn-ghost nx-btn-ghost-pill">
                 Ver soluções
               </Link>

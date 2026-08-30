@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { EMAIL, PHONE_DISPLAY } from "@/lib/site";
+import { EMAIL } from "@/lib/site";
 
 const COLUMNS = [
   {
@@ -52,8 +52,6 @@ export function Footer() {
             <a href={`mailto:${EMAIL}`} className="text-nx-red">
               {EMAIL}
             </a>
-            <br />
-            WHATSAPP · <span className="text-nx-red">{PHONE_DISPLAY}</span>
           </p>
         </div>
 

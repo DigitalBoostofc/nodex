@@ -3,7 +3,6 @@ import Link from "next/link";
 
 import { CtaButtons } from "@/components/cta-buttons";
 import { HeroBackdrop, Section, SectionHead } from "@/components/ui";
-import { WaLink } from "@/components/wa-link";
 
 export const metadata: Metadata = {
   title: "Soluções",
@@ -52,7 +51,9 @@ export default function SolucoesPage() {
             ferramenta pronta não serve.
           </p>
           <div className="mt-9 flex flex-wrap gap-[14px]">
-            <WaLink className="nx-btn">Fale com a Nodex</WaLink>
+            <Link href="/contato" className="nx-btn">
+              Fale com a Nodex
+            </Link>
             <Link href="/cases" className="nx-btn-ghost">
               Ver cases
             </Link>

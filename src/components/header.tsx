@@ -7,7 +7,7 @@ import { useState } from "react";
 
 import { NAV } from "@/lib/site";
 
-import { WaLink } from "./wa-link";
+
 
 /** "Sistemas" fica na raiz, então a home é o item ativo dela. */
 function isActive(pathname: string, href: string) {
@@ -57,9 +57,9 @@ export function Header() {
               {item.label}
             </Link>
           ))}
-          <WaLink className="nx-btn px-5 py-[15px] text-[14px]/[1]">
+          <Link href="/contato" className="nx-btn px-5 py-[15px] text-[14px]/[1]">
             Fale com a Nodex
-          </WaLink>
+          </Link>
         </nav>
 
         <button
@@ -114,9 +114,9 @@ export function Header() {
               {item.label}
             </Link>
           ))}
-          <WaLink className="nx-btn mt-6 w-full text-center">
+          <Link href="/contato" className="nx-btn mt-6 w-full text-center">
             Fale com a Nodex
-          </WaLink>
+          </Link>
         </nav>
       ) : null}
     </header>

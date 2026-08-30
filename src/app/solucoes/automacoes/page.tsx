@@ -5,7 +5,6 @@ import { CtaForm } from "@/components/cta-block";
 import { FaqSection, type FaqItem } from "@/components/faq";
 import { PieceStage } from "@/components/piece-stage";
 import { HeroBackdrop, HeroPill, Section, SectionHead } from "@/components/ui";
-import { WaLink } from "@/components/wa-link";
 
 export const metadata: Metadata = {
   title: "Automações",
@@ -103,7 +102,9 @@ export default function AutomacoesPage() {
             Com trilha para auditar.
           </p>
           <div className="mt-11 flex flex-wrap justify-center gap-[14px]">
-            <WaLink className="nx-btn nx-btn-pill">Fale com a Nodex →</WaLink>
+            <Link href="/contato" className="nx-btn nx-btn-pill">
+              Fale com a Nodex →
+            </Link>
             <Link
               href="/cases/cleanox"
               className="nx-btn-ghost nx-btn-ghost-pill"

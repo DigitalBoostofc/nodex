@@ -6,7 +6,6 @@ import { CtaForm } from "@/components/cta-block";
 import { FaqSection, type FaqItem } from "@/components/faq";
 import { StepList, type Step } from "@/components/step-track";
 import { HeroBackdrop, HeroPill, Section, SectionHead } from "@/components/ui";
-import { WaLink } from "@/components/wa-link";
 
 export const metadata: Metadata = {
   title: "Chatbots",
@@ -113,7 +112,9 @@ export default function ChatbotsPage() {
             fazer a pessoa repetir.
           </p>
           <div className="mt-11 flex flex-wrap justify-center gap-[14px]">
-            <WaLink className="nx-btn nx-btn-pill">Fale com a Nodex →</WaLink>
+            <Link href="/contato" className="nx-btn nx-btn-pill">
+              Fale com a Nodex →
+            </Link>
             <Link
               href="/cases/cleanox"
               className="nx-btn-ghost nx-btn-ghost-pill"
