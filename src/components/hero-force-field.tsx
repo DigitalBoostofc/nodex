@@ -35,7 +35,7 @@ export function HeroForceField() {
         spacing={9}
         minStroke={0.55}
         maxStroke={4.4}
-        magnifierRadius={55}
+        magnifierRadius={25}
         forceStrength={22}
         friction={0.82}
         restoreSpeed={0.032}
