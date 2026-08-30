@@ -14,7 +14,7 @@ import "./globals.css";
  */
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "500"],
   variable: "--font-poppins",
   display: "swap",
 });
@@ -28,7 +28,7 @@ const plex = IBM_Plex_Sans({
 
 const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["500"],
   variable: "--font-jetbrains",
   display: "swap",
 });

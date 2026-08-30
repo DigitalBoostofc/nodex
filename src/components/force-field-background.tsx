@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type p5 from "p5";
 
 export type ForceFieldBackgroundProps = {
   /** Source image whose brightness map becomes the particle field. */
@@ -43,91 +42,68 @@ const NODEX_SWATCHES = [
   "#141414",
 ] as const;
 
+type Particle = {
+  x: number;
+  y: number;
+  ox: number;
+  oy: number;
+  shadeIndex: number;
+  strokeSize: number;
+  onMark: boolean;
+};
+
 /**
- * Interactive particle field. p5 is loaded only in the browser so the
- * home RSC bundle stays free of the canvas runtime.
+ * NX particle field on a native canvas. p5 is not used — it added ~1MB of
+ * parse/eval on the main thread and showed up as TBT on GTmetrix.
  */
 export function ForceFieldBackground({
   imageUrl = "/assets/symbol-on-black.png",
-  hue = 2,
-  saturation = 100,
   threshold = 255,
   minStroke = 1.2,
   maxStroke = 4,
   spacing = 10,
-  noiseScale = 0,
   density = 2,
   invertImage = true,
   invertWireframe = true,
-  magnifierEnabled = true,
-  magnifierRadius = 170,
-  forceStrength = 13,
-  friction = 0.9,
-  restoreSpeed = 0.05,
   markAlign,
   markScale,
   className = "",
 }: ForceFieldBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const p5InstanceRef = useRef<p5 | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const propsRef = useRef({
-    hue,
-    saturation,
     threshold,
     minStroke,
     maxStroke,
     spacing,
-    noiseScale,
     density,
     invertImage,
     invertWireframe,
-    magnifierEnabled,
-    magnifierRadius,
-    forceStrength,
-    friction,
-    restoreSpeed,
     markAlign,
     markScale,
   });
 
   useEffect(() => {
     propsRef.current = {
-      hue,
-      saturation,
       threshold,
       minStroke,
       maxStroke,
       spacing,
-      noiseScale,
       density,
       invertImage,
       invertWireframe,
-      magnifierEnabled,
-      magnifierRadius,
-      forceStrength,
-      friction,
-      restoreSpeed,
       markAlign,
       markScale,
     };
   }, [
-    hue,
-    saturation,
     threshold,
     minStroke,
     maxStroke,
     spacing,
-    noiseScale,
     density,
     invertImage,
     invertWireframe,
-    magnifierEnabled,
-    magnifierRadius,
-    forceStrength,
-    friction,
-    restoreSpeed,
     markAlign,
     markScale,
   ]);
@@ -137,320 +113,264 @@ export function ForceFieldBackground({
     if (!node) return;
 
     let cancelled = false;
+    let raf = 0;
     let observer: ResizeObserver | null = null;
-    let syncSize = () => {};
+    let canvas: HTMLCanvasElement | null = null;
+    let ctx: CanvasRenderingContext2D | null = null;
+    let source: HTMLImageElement | null = null;
+    let pixels: Uint8ClampedArray | null = null;
+    let imgW = 0;
+    let imgH = 0;
+    let pointsByShade: Particle[][] = NODEX_SWATCHES.map(() => []);
+    let scanLineEls: Element[] | null = null;
+    let idleId = 0;
+    const hasIdle = "requestIdleCallback" in window;
 
-    (async () => {
-      const mod = await import("p5");
-      if (cancelled || !containerRef.current) return;
+    function size() {
+      if (!node) return { w: 0, h: 0 };
+      return {
+        w: Math.max(1, node.clientWidth),
+        h: Math.max(1, node.clientHeight),
+      };
+    }
 
-      const P5 = (mod.default ?? mod) as typeof p5;
+    function buildPoints() {
+      if (!canvas || !source || !pixels) return;
+      const props = propsRef.current;
+      const { w, h } = size();
+      if (w < 2 || h < 2) return;
 
-      if (p5InstanceRef.current) {
-        p5InstanceRef.current.remove();
-        p5InstanceRef.current = null;
+      const overlay = w >= 720;
+      const fraction = props.markScale ?? (overlay ? 0.6 : 1.22);
+      const scale = Math.min(
+        (w * fraction) / source.naturalWidth,
+        (h * fraction) / source.naturalHeight,
+      );
+      const drawW = source.naturalWidth * scale;
+      const drawH = source.naturalHeight * scale;
+      const align = props.markAlign ?? (overlay ? "right" : "center");
+      const drawX =
+        align === "right"
+          ? Math.max(w * 0.36, w - drawW - w * 0.1)
+          : (w - drawW) / 2;
+      const drawY = overlay ? (h - drawH) / 2 : -drawH * 0.21;
+
+      const layer = document.createElement("canvas");
+      layer.width = w;
+      layer.height = h;
+      const layerCtx = layer.getContext("2d", { willReadFrequently: true });
+      if (!layerCtx) return;
+      layerCtx.fillStyle = "#000";
+      layerCtx.fillRect(0, 0, w, h);
+      layerCtx.drawImage(source, drawX, drawY, drawW, drawH);
+      const sample = layerCtx.getImageData(0, 0, w, h);
+      pixels = sample.data;
+      imgW = w;
+      imgH = h;
+
+      if (props.invertImage) {
+        for (let i = 0; i < pixels.length; i += 4) {
+          pixels[i] = 255 - pixels[i];
+          pixels[i + 1] = 255 - pixels[i + 1];
+          pixels[i + 2] = 255 - pixels[i + 2];
+        }
       }
 
-      let relayout = () => {};
-      let scanLineEls: Element[] | null = null;
+      const fillField = !props.invertWireframe && props.threshold <= 0;
+      const gap = Math.max(3, props.spacing);
+      const keep = props.density;
+      pointsByShade = NODEX_SWATCHES.map(() => []);
 
-      type Particle = {
-        x: number;
-        y: number;
-        ox: number;
-        oy: number;
-        shadeIndex: number;
-        strokeSize: number;
-        onMark: boolean;
-      };
+      for (let y = 0; y < imgH; y += gap) {
+        for (let x = 0; x < imgW; x += gap) {
+          if (keep <= 1 && Math.random() > keep) continue;
+          const index = (x + y * imgW) * 4;
+          const red = pixels[index];
+          const green = pixels[index + 1];
+          const blue = pixels[index + 2];
+          if (red === undefined) continue;
+          const brightness = Math.max(red, green, blue);
+          const isRedMark =
+            red > 55 &&
+            red > green + 18 &&
+            red > blue + 18 &&
+            red > green * 1.15;
+          const isWhiteMark =
+            brightness >= 140 &&
+            green >= red * 0.72 &&
+            blue >= red * 0.72 &&
+            Math.abs(green - blue) < 40;
+          if (fillField && !isRedMark && !isWhiteMark) continue;
+          const visible = fillField
+            ? true
+            : props.invertWireframe
+              ? brightness < props.threshold
+              : brightness > props.threshold;
+          if (!visible) continue;
 
-      const sketch = (p: p5) => {
-        let originalImg: p5.Image | undefined;
-        let img: p5.Image | undefined;
-        let pointsByShade: Particle[][] = NODEX_SWATCHES.map(() => []);
-
-        let lastSpacing = -1;
-        let lastNoiseScale = -1;
-        let lastDensity = -1;
-        let lastInvertImage: boolean | null = null;
-
-        p.setup = () => {
-          const { clientWidth, clientHeight } = containerRef.current!;
-          p.createCanvas(Math.max(1, clientWidth), Math.max(1, clientHeight));
-          p.pixelDensity(1);
-          p.colorMode(p.RGB, 255);
-          p.loadImage(
-            imageUrl,
-            (loaded) => {
-              originalImg = loaded;
-              relayout();
-            },
-            () => {
-              setError("Não foi possível carregar o mapa de partículas.");
-            },
-          );
-        };
-
-        p.windowResized = () => {
-          relayout();
-        };
-
-        relayout = () => {
-          const node = containerRef.current;
-          if (!node) return;
-          const nextW = node.clientWidth;
-          const nextH = node.clientHeight;
-          if (nextW < 2 || nextH < 2) return;
-          const sizeChanged = nextW !== p.width || nextH !== p.height;
-          if (!sizeChanged && img) return;
-          if (sizeChanged) {
-            p.resizeCanvas(nextW, nextH);
-          }
-          if (!originalImg) return;
-          processImage();
-          generatePoints();
-        };
-
-        function processImage() {
-          if (!originalImg || p.width < 2 || p.height < 2) return;
-
-          const layer = p.createGraphics(p.width, p.height);
-          layer.pixelDensity(1);
-          layer.background(0);
-
-          // Overlay (desktop, full hero) vs contained slot (mobile, ~square).
-          const overlay = p.width >= 720;
-          const fraction =
-            propsRef.current.markScale ?? (overlay ? 0.6 : 1.22);
-          const maxW = p.width * fraction;
-          const maxH = p.height * fraction;
-          const scale = Math.min(
-            maxW / originalImg.width,
-            maxH / originalImg.height,
-          );
-          const drawW = originalImg.width * scale;
-          const drawH = originalImg.height * scale;
-          const align =
-            propsRef.current.markAlign ?? (overlay ? "right" : "center");
-          const drawX =
-            align === "right"
-              ? Math.max(p.width * 0.36, p.width - drawW - p.width * 0.1)
-              : (p.width - drawW) / 2;
-          // Contained slot: crop the PNG's top pad so the mark hugs the CTAs.
-          const drawY = overlay
-            ? (p.height - drawH) / 2
-            : -drawH * 0.21;
-          layer.image(originalImg, drawX, drawY, drawW, drawH);
-
-          img = layer.get();
-          layer.remove();
-          img.loadPixels();
-          if (propsRef.current.invertImage) {
-            for (let i = 0; i < img.pixels.length; i += 4) {
-              img.pixels[i] = 255 - img.pixels[i];
-              img.pixels[i + 1] = 255 - img.pixels[i + 1];
-              img.pixels[i + 2] = 255 - img.pixels[i + 2];
-            }
-            img.updatePixels();
-            img.loadPixels();
-          }
-          lastInvertImage = propsRef.current.invertImage;
+          const mark = isRedMark ? Math.max(brightness, 235) : brightness;
+          const shadeIndex = fillField
+            ? isRedMark
+              ? 3
+              : 1
+            : Math.max(
+                0,
+                Math.min(
+                  NODEX_SWATCHES.length - 1,
+                  Math.floor((brightness / 255) * (NODEX_SWATCHES.length - 1)),
+                ),
+              );
+          const particle: Particle = {
+            x,
+            y,
+            ox: x,
+            oy: y,
+            shadeIndex,
+            strokeSize:
+              props.minStroke +
+              (mark / 255) * (props.maxStroke - props.minStroke),
+            onMark: isRedMark || mark > 48,
+          };
+          const bucket = pointsByShade[shadeIndex];
+          if (bucket) bucket.push(particle);
         }
+      }
+    }
 
-        function generatePoints() {
-          if (!img) return;
-          const pixels = img.pixels;
-          const imgW = img.width;
-          const imgH = img.height;
-          const props = propsRef.current;
-          const gap = props.spacing;
-          const keep = props.density;
-          const noise = props.noiseScale;
-          const safeSpacing = Math.max(3, gap);
-          const fillField = !props.invertWireframe && props.threshold <= 0;
+    function relayout() {
+      if (!canvas || !node) return;
+      const { w, h } = size();
+      if (w < 2 || h < 2) return;
+      if (canvas.width === w && canvas.height === h && pixels) return;
+      canvas.width = w;
+      canvas.height = h;
+      buildPoints();
+    }
 
-          pointsByShade = NODEX_SWATCHES.map(() => []);
+    function scanYs(): number[] {
+      if (!canvas) return [0];
+      const fallback = [
+        ((performance.now() % SCAN_MS) / SCAN_MS) * canvas.height,
+      ];
+      if (!scanLineEls) {
+        scanLineEls = [
+          ...(containerRef.current
+            ?.closest("section")
+            ?.querySelectorAll("[data-nx-anim='line']") ?? []),
+        ];
+      }
+      if (scanLineEls.length === 0) return fallback;
+      const box = canvas.getBoundingClientRect();
+      if (box.height < 2) return fallback;
+      const ys: number[] = [];
+      for (const el of scanLineEls) {
+        const line = el.getBoundingClientRect();
+        if (line.height < 2) continue;
+        const center = line.top + line.height / 2;
+        ys.push(((center - box.top) / box.height) * canvas.height);
+      }
+      return ys.length > 0 ? ys : fallback;
+    }
 
-          for (let y = 0; y < imgH; y += safeSpacing) {
-            for (let x = 0; x < imgW; x += safeSpacing) {
-              if (keep <= 1 && p.random() > keep) continue;
-              const nx = noise === 0 ? 0 : p.noise(x * noise, y * noise) - 0.5;
-              const ny =
-                noise === 0
-                  ? 0
-                  : p.noise((x + 500) * noise, (y + 500) * noise) - 0.5;
-              const px = x + nx * safeSpacing;
-              const py = y + ny * safeSpacing;
-              const ix = Math.max(0, Math.min(imgW - 1, x | 0));
-              const iy = Math.max(0, Math.min(imgH - 1, y | 0));
-              const index = (ix + iy * imgW) * 4;
-              const red = pixels[index];
-              const green = pixels[index + 1];
-              const blue = pixels[index + 2];
-              if (red === undefined) continue;
-              const brightness = Math.max(red, green, blue);
-              const isRedMark =
-                red > 55 &&
-                red > green + 18 &&
-                red > blue + 18 &&
-                red > green * 1.15;
-              const isWhiteMark =
-                brightness >= 140 &&
-                green >= red * 0.72 &&
-                blue >= red * 0.72 &&
-                Math.abs(green - blue) < 40;
-              if (fillField && !isRedMark && !isWhiteMark) continue;
-
-              const visible = fillField
-                ? true
-                : props.invertWireframe
-                  ? brightness < props.threshold
-                  : brightness > props.threshold;
-              if (!visible) continue;
-
-              const mark = isRedMark ? Math.max(brightness, 235) : brightness;
-              const shadeIndex = fillField
-                ? isRedMark
-                  ? 3
-                  : 1
-                : Math.max(
-                    0,
-                    Math.min(
-                      NODEX_SWATCHES.length - 1,
-                      Math.floor(
-                        (brightness / 255) * (NODEX_SWATCHES.length - 1),
-                      ),
-                    ),
-                  );
-              const strokeSize =
-                props.minStroke +
-                (mark / 255) * (props.maxStroke - props.minStroke);
-              const particle: Particle = {
-                x: px,
-                y: py,
-                ox: px,
-                oy: py,
-                shadeIndex,
-                strokeSize,
-                onMark: isRedMark || mark > 48,
-              };
-              const bucket = pointsByShade[shadeIndex];
-              if (bucket) bucket.push(particle);
-            }
-          }
-
-          lastSpacing = gap;
-          lastNoiseScale = noise;
-          lastDensity = keep;
-        }
-
-        function scanYsInCanvas() {
-          const fallback = [((p.millis() % SCAN_MS) / SCAN_MS) * p.height];
-          if (p.width >= 720) return fallback;
-
-          const node = containerRef.current;
-          const canvasEl = node?.querySelector("canvas");
-          if (!node || !canvasEl) return fallback;
-
-          if (!scanLineEls) {
-            scanLineEls = [
-              ...(node
-                .closest("section")
-                ?.querySelectorAll("[data-nx-anim='line']") ?? []),
-            ];
-          }
-          if (scanLineEls.length === 0) return fallback;
-
-          const canvas = canvasEl.getBoundingClientRect();
-          if (canvas.height < 2) return fallback;
-
-          const ys: number[] = [];
-          for (const el of scanLineEls) {
-            const line = el.getBoundingClientRect();
-            if (line.height < 2) continue;
-            const lineCenter = line.top + line.height / 2;
-            ys.push(((lineCenter - canvas.top) / canvas.height) * p.height);
-          }
-          return ys.length > 0 ? ys : fallback;
-        }
-
-        p.draw = () => {
-          if (!img) return;
-
-          const props = propsRef.current;
-          if (props.invertImage !== lastInvertImage) {
-            processImage();
-            generatePoints();
-          }
-          if (
-            props.spacing !== lastSpacing ||
-            props.noiseScale !== lastNoiseScale ||
-            props.density !== lastDensity
-          ) {
-            generatePoints();
-          }
-
-          p.clear();
-          const canvasEl = containerRef.current?.querySelector("canvas");
-          const ctx = canvasEl?.getContext("2d");
-          if (!ctx) return;
-
-          const scanYs = scanYsInCanvas();
-          const now = p.millis();
-
-          for (let i = 0; i < pointsByShade.length; i++) {
-            const bucket = pointsByShade[i];
-            if (!bucket || bucket.length === 0) continue;
-            ctx.fillStyle = NODEX_SWATCHES[i] ?? "#ffffff";
-            for (const pt of bucket) {
-              let drawX = pt.x;
-              let drawY = pt.y;
-              if (pt.onMark) {
-                let dist = 0;
-                let nearest = WAVE_BAND;
-                for (const scanY of scanYs) {
-                  const d = pt.y - scanY;
-                  const ad = Math.abs(d);
-                  if (ad < nearest) {
-                    nearest = ad;
-                    dist = d;
-                  }
-                }
-                if (nearest < WAVE_BAND) {
-                  const env = 1 - nearest / WAVE_BAND;
-                  const env2 = env * env;
-                  const phase = pt.ox * 0.048 + now * 0.0035;
-                  drawX = pt.x + Math.sin(phase) * 18 * env2;
-                  drawY =
-                    pt.y +
-                    Math.cos(phase * 0.72) * 7 * env2 +
-                    Math.sin((dist / WAVE_BAND) * Math.PI) * 10 * env;
-                }
+    function draw(now: number) {
+      if (cancelled || !ctx || !canvas) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const ys = scanYs();
+      for (let i = 0; i < pointsByShade.length; i++) {
+        const bucket = pointsByShade[i];
+        if (!bucket || bucket.length === 0) continue;
+        ctx.fillStyle = NODEX_SWATCHES[i] ?? "#ffffff";
+        for (const pt of bucket) {
+          let drawX = pt.x;
+          let drawY = pt.y;
+          if (pt.onMark) {
+            let dist = 0;
+            let nearest = WAVE_BAND;
+            for (const scanY of ys) {
+              const d = pt.y - scanY;
+              const ad = Math.abs(d);
+              if (ad < nearest) {
+                nearest = ad;
+                dist = d;
               }
-              const s = pt.strokeSize;
-              ctx.fillRect(drawX - s * 0.5, drawY - s * 0.5, s, s);
+            }
+            if (nearest < WAVE_BAND) {
+              const env = 1 - nearest / WAVE_BAND;
+              const env2 = env * env;
+              const phase = pt.ox * 0.048 + now * 0.0035;
+              drawX = pt.x + Math.sin(phase) * 18 * env2;
+              drawY =
+                pt.y +
+                Math.cos(phase * 0.72) * 7 * env2 +
+                Math.sin((dist / WAVE_BAND) * Math.PI) * 10 * env;
             }
           }
-        };
-      };
+          const s = pt.strokeSize;
+          ctx.fillRect(drawX - s * 0.5, drawY - s * 0.5, s, s);
+        }
+      }
+      raf = requestAnimationFrame(draw);
+    }
 
-      const instance = new P5(sketch, containerRef.current);
-      p5InstanceRef.current = instance;
+    function start() {
+      if (cancelled || !node) return;
+      canvas = document.createElement("canvas");
+      canvas.setAttribute("aria-hidden", "true");
+      canvas.style.display = "block";
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
+      ctx = canvas.getContext("2d", { alpha: true });
+      if (!ctx) {
+        setError("Não foi possível iniciar o campo de partículas.");
+        return;
+      }
+      node.appendChild(canvas);
 
-      syncSize = () => {
+      const img = new Image();
+      img.decoding = "async";
+      img.onload = () => {
+        if (cancelled) return;
+        source = img;
+        pixels = new Uint8ClampedArray(0);
         relayout();
+        raf = requestAnimationFrame(draw);
       };
-      observer = new ResizeObserver(syncSize);
-      observer.observe(containerRef.current);
-      window.addEventListener("resize", syncSize);
-    })();
+      img.onerror = () => {
+        setError("Não foi possível carregar o mapa de partículas.");
+      };
+      img.src = imageUrl;
+
+      observer = new ResizeObserver(() => {
+        relayout();
+      });
+      observer.observe(node);
+    }
+
+    const boot = () => {
+      if (cancelled) return;
+      if (hasIdle) {
+        idleId = requestIdleCallback(start, { timeout: 1800 });
+      } else {
+        idleId = window.setTimeout(start, 200);
+      }
+    };
+    if (document.readyState === "complete") {
+      boot();
+    } else {
+      window.addEventListener("load", boot, { once: true });
+    }
 
     return () => {
       cancelled = true;
+      window.removeEventListener("load", boot);
+      if (hasIdle) {
+        cancelIdleCallback(idleId);
+      } else {
+        window.clearTimeout(idleId);
+      }
+      cancelAnimationFrame(raf);
       observer?.disconnect();
-      window.removeEventListener("resize", syncSize);
-      p5InstanceRef.current?.remove();
-      p5InstanceRef.current = null;
+      canvas?.remove();
     };
   }, [imageUrl, markAlign, markScale]);
 

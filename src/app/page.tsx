@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -5,9 +6,14 @@ import { CtaForm } from "@/components/cta-block";
 import { FaqSection, type FaqItem } from "@/components/faq";
 import { ProblemRail } from "@/components/problem-rail";
 import { StepList, type Step } from "@/components/step-track";
-import { HeroForceField } from "@/components/hero-force-field";
 import { HeroBackdrop, HeroPill, Section, SectionHead } from "@/components/ui";
 import { WaLink } from "@/components/wa-link";
+
+const HeroForceField = dynamic(
+  () =>
+    import("@/components/hero-force-field").then((m) => m.HeroForceField),
+  { ssr: false },
+);
 
 const PROBLEMS = [
   {

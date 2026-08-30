@@ -37,6 +37,7 @@ export function Header() {
             width={352}
             height={72}
             priority
+            sizes="157px"
             className="block h-9 w-auto mix-blend-screen"
           />
         </Link>
