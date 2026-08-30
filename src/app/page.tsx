@@ -86,29 +86,31 @@ export default function HomePage() {
     <>
       <section className="relative overflow-hidden">
         <HeroForceField />
-        <div className="pointer-events-none relative z-10 mx-auto max-w-[1280px] px-5 pt-12 pb-28 text-center md:px-8 md:pt-35 lg:px-12">
-          <span className="nx-label tracking-[0.22em]">NODEX LABS</span>
-          <div className="mt-[22px] flex justify-center">
-            <HeroPill pulsing>SISTEMAS · CHATBOTS · AUTOMAÇÃO</HeroPill>
+        <div className="pointer-events-none relative z-10 mx-auto flex min-h-[640px] max-w-[1280px] items-center px-5 pt-12 pb-28 md:min-h-[720px] md:px-8 md:pt-24 lg:px-12">
+          <div className="w-full max-w-[36rem] text-left lg:max-w-[38rem]">
+            <span className="nx-label tracking-[0.22em]">NODEX LABS</span>
+            <div className="mt-[22px]">
+              <HeroPill pulsing>SISTEMAS · CHATBOTS · AUTOMAÇÃO</HeroPill>
+            </div>
+            <h1 className="nx-h1 mt-8 max-w-[14ch]">
+              Seu processo hoje é manual.{" "}
+              <span className="text-nx-red">Amanhã ele roda sozinho.</span>
+            </h1>
+            <p className="mt-7 max-w-[46ch] text-[19px]/[1.65] font-light text-[#EDEDED] [text-shadow:0_1px_2px_rgba(0,0,0,0.9),0_0_22px_rgba(0,0,0,0.85)]">
+              A Nodex Labs constrói chatbots, automações e sistemas sob medida,
+              integrados ao processo que você já opera. Do primeiro diagnóstico à
+              manutenção depois de ir ao ar.
+            </p>
+            <div className="pointer-events-auto mt-11 flex flex-wrap justify-start gap-[14px]">
+              <WaLink className="nx-btn nx-btn-pill">Fale com a Nodex →</WaLink>
+              <Link href="/solucoes" className="nx-btn-ghost nx-btn-ghost-pill">
+                Ver soluções
+              </Link>
+            </div>
+            <p className="mt-11 font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-[#D0D0D0] [text-shadow:0_1px_10px_rgba(0,0,0,0.95),0_0_20px_rgba(0,0,0,0.9)]">
+              DO DIAGNÓSTICO AO SISTEMA EM PRODUÇÃO.
+            </p>
           </div>
-          <h1 className="nx-h1 mx-auto mt-8 max-w-[20ch]">
-            Seu processo hoje é manual.{" "}
-            <span className="text-nx-red">Amanhã ele roda sozinho.</span>
-          </h1>
-          <p className="mx-auto mt-7 max-w-[58ch] text-[19px]/[1.65] font-light text-[#EDEDED] [text-shadow:0_1px_2px_rgba(0,0,0,0.9),0_0_22px_rgba(0,0,0,0.85)]">
-            A Nodex Labs constrói chatbots, automações e sistemas sob medida,
-            integrados ao processo que você já opera. Do primeiro diagnóstico à
-            manutenção depois de ir ao ar.
-          </p>
-          <div className="pointer-events-auto mt-11 flex flex-wrap justify-center gap-[14px]">
-            <WaLink className="nx-btn nx-btn-pill">Fale com a Nodex →</WaLink>
-            <Link href="/solucoes" className="nx-btn-ghost nx-btn-ghost-pill">
-              Ver soluções
-            </Link>
-          </div>
-          <p className="mt-11 font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-[#D0D0D0] [text-shadow:0_1px_10px_rgba(0,0,0,0.95),0_0_20px_rgba(0,0,0,0.9)]">
-            DO DIAGNÓSTICO AO SISTEMA EM PRODUÇÃO.
-          </p>
         </div>
       </section>
 

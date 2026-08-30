@@ -22,6 +22,8 @@ export type ForceFieldBackgroundProps = {
   forceStrength?: number;
   friction?: number;
   restoreSpeed?: number;
+  /** Where the NX mark sits inside the hero. */
+  markAlign?: "center" | "right";
   className?: string;
 };
 
@@ -57,6 +59,7 @@ export function ForceFieldBackground({
   forceStrength = 13,
   friction = 0.9,
   restoreSpeed = 0.05,
+  markAlign = "center",
   className = "",
 }: ForceFieldBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -79,6 +82,7 @@ export function ForceFieldBackground({
     forceStrength,
     friction,
     restoreSpeed,
+    markAlign,
   });
 
   useEffect(() => {
@@ -98,6 +102,7 @@ export function ForceFieldBackground({
       forceStrength,
       friction,
       restoreSpeed,
+      markAlign,
     };
   }, [
     hue,
@@ -115,6 +120,7 @@ export function ForceFieldBackground({
     forceStrength,
     friction,
     restoreSpeed,
+    markAlign,
   ]);
 
   useEffect(() => {
@@ -215,9 +221,14 @@ export function ForceFieldBackground({
           );
           const drawW = originalImg.width * scale;
           const drawH = originalImg.height * scale;
+          const align = propsRef.current.markAlign;
+          const drawX =
+            align === "right"
+              ? Math.max(p.width * 0.42, p.width - drawW - p.width * 0.04)
+              : (p.width - drawW) / 2;
           layer.image(
             originalImg,
-            (p.width - drawW) / 2,
+            drawX,
             (p.height - drawH) / 2,
             drawW,
             drawH,
@@ -387,7 +398,7 @@ export function ForceFieldBackground({
       p5InstanceRef.current?.remove();
       p5InstanceRef.current = null;
     };
-  }, [imageUrl]);
+  }, [imageUrl, markAlign]);
 
   return (
     <div
