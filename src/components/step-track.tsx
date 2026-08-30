@@ -11,6 +11,7 @@ import {
 const CYCLE_MS = 2600;
 const MD_QUERY = "(min-width: 768px)";
 const REDUCE_QUERY = "(prefers-reduced-motion: reduce)";
+const STEP_SWIPE_PX = 36;
 
 /**
  * Percorre os passos sozinho para que a etapa em destaque se explique sem
@@ -87,7 +88,8 @@ export type Step = {
  * O prazo só aparece quando é real, então `output` é opcional.
  *
  * Mobile: carrossel com arraste, pontos e altura de conteúdo — a página
- * continua rolando. Desktop: grid com o ciclo automático.
+ * continua rolando. Um gesto troca só um passo, mesmo em flick rápido.
+ * Desktop: grid com o ciclo automático.
  */
 export function StepList({
   steps,
@@ -132,26 +134,114 @@ export function StepList({
     const el = scrollerRef.current;
     if (!el || desktop) return;
 
-    const onScroll = () => {
-      const w = el.clientWidth;
+    let origin = 0;
+    let startX = 0;
+    let startY = 0;
+    let axis: "x" | "y" | null = null;
+    let holding = false;
+    let locking = false;
+    let settleTimer = 0;
+
+    const width = () => el.clientWidth;
+
+    const indexAt = (left = el.scrollLeft) => {
+      const w = width();
+      if (w <= 0) return 0;
+      return Math.max(0, Math.min(total - 1, Math.round(left / w)));
+    };
+
+    const clampToNeighbors = () => {
+      const w = width();
       if (w <= 0) return;
-      const next = Math.round(el.scrollLeft / w);
-      setSlide(Math.max(0, Math.min(total - 1, next)));
+      const min = Math.max(0, origin - 1) * w;
+      const max = Math.min(total - 1, origin + 1) * w;
+      if (el.scrollLeft < min) el.scrollLeft = min;
+      if (el.scrollLeft > max) el.scrollLeft = max;
+    };
+
+    const settle = () => {
+      if (!holding) return;
+      holding = false;
+      const w = width();
+      let next = origin;
+      if (axis === "x") {
+        const dx = el.scrollLeft - origin * w;
+        const threshold = Math.min(STEP_SWIPE_PX, w * 0.12);
+        if (dx > threshold) next = Math.min(total - 1, origin + 1);
+        else if (dx < -threshold) next = Math.max(0, origin - 1);
+      }
+      axis = null;
+      locking = true;
+      el.style.scrollSnapType = "none";
+      el.style.overflowX = "hidden";
+      goTo(next, false);
+      window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(() => {
+        el.style.overflowX = "";
+        el.style.scrollSnapType = "";
+        locking = false;
+      }, 180);
+    };
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      holding = true;
+      locking = false;
+      axis = null;
+      origin = indexAt();
+      startX = event.clientX;
+      startY = event.clientY;
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (!holding || axis) return;
+      const dx = event.clientX - startX;
+      const dy = event.clientY - startY;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < STEP_SWIPE_PX) return;
+      axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+      if (axis === "x") {
+        try {
+          el.setPointerCapture(event.pointerId);
+        } catch {
+          /* Safari antigo sem capture — o pointerup no elemento ainda chega. */
+        }
+      } else {
+        holding = false;
+        axis = null;
+      }
+    };
+
+    const onPointerUp = () => settle();
+
+    const onScroll = () => {
+      if (holding || locking) clampToNeighbors();
+      setSlide(indexAt());
     };
 
     const onResize = () => {
-      const w = el.clientWidth;
+      const w = width();
       if (w <= 0) return;
-      el.scrollTo({ left: Math.round(el.scrollLeft / w) * w, behavior: "auto" });
+      el.scrollTo({ left: indexAt() * w, behavior: "auto" });
     };
 
+    el.addEventListener("pointerdown", onPointerDown);
+    el.addEventListener("pointermove", onPointerMove);
+    el.addEventListener("pointerup", onPointerUp);
+    el.addEventListener("pointercancel", onPointerUp);
     el.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize, { passive: true });
     return () => {
+      window.clearTimeout(settleTimer);
+      el.style.scrollSnapType = "";
+      el.style.overflowX = "";
+      el.removeEventListener("pointerdown", onPointerDown);
+      el.removeEventListener("pointermove", onPointerMove);
+      el.removeEventListener("pointerup", onPointerUp);
+      el.removeEventListener("pointercancel", onPointerUp);
       el.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
     };
-  }, [desktop, total]);
+  }, [desktop, goTo, total]);
 
   return (
     <div>
@@ -171,7 +261,7 @@ export function StepList({
               onFocus={pick(index)}
               tabIndex={0}
               aria-current={on ? "step" : undefined}
-              className={`w-full max-w-full shrink-0 basis-full snap-start transition-opacity duration-[320ms] ease-[cubic-bezier(.2,.8,.2,1)] md:w-auto md:max-w-none md:basis-auto md:shrink motion-reduce:max-md:w-auto motion-reduce:max-md:max-w-none motion-reduce:max-md:basis-auto motion-reduce:max-md:shrink ${
+              className={`w-full max-w-full shrink-0 basis-full snap-start max-md:snap-always transition-opacity duration-[320ms] ease-[cubic-bezier(.2,.8,.2,1)] md:w-auto md:max-w-none md:basis-auto md:shrink motion-reduce:max-md:w-auto motion-reduce:max-md:max-w-none motion-reduce:max-md:basis-auto motion-reduce:max-md:shrink ${
                 on ? "opacity-100" : "md:opacity-45"
               }`}
             >
