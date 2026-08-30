@@ -49,7 +49,7 @@ const PROCESS: Step[] = [
   {
     title: "Operação",
     text: "Medimos o efeito, ajustamos todos os possíveis erros, e adicionamos novas funções de acordo com a necessidade do cliente.",
-    output: "sistema rodando, não um protótipo na gaveta.",
+    output: "Sistema rodando e otimizado no menor tempo possível.",
   },
 ];
 
