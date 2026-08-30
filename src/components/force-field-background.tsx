@@ -22,8 +22,10 @@ export type ForceFieldBackgroundProps = {
   forceStrength?: number;
   friction?: number;
   restoreSpeed?: number;
-  /** Where the NX mark sits inside the hero. */
+  /** Where the NX mark sits. Omit to infer from canvas width (slot vs overlay). */
   markAlign?: "center" | "right";
+  /** Mark size as a fraction of the canvas. Omit to infer with `markAlign`. */
+  markScale?: number;
   className?: string;
 };
 
@@ -62,7 +64,8 @@ export function ForceFieldBackground({
   forceStrength = 13,
   friction = 0.9,
   restoreSpeed = 0.05,
-  markAlign = "center",
+  markAlign,
+  markScale,
   className = "",
 }: ForceFieldBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -86,6 +89,7 @@ export function ForceFieldBackground({
     friction,
     restoreSpeed,
     markAlign,
+    markScale,
   });
 
   useEffect(() => {
@@ -106,6 +110,7 @@ export function ForceFieldBackground({
       friction,
       restoreSpeed,
       markAlign,
+      markScale,
     };
   }, [
     hue,
@@ -124,6 +129,7 @@ export function ForceFieldBackground({
     friction,
     restoreSpeed,
     markAlign,
+    markScale,
   ]);
 
   useEffect(() => {
@@ -132,6 +138,8 @@ export function ForceFieldBackground({
 
     let cancelled = false;
     let observer: ResizeObserver | null = null;
+    let poll = 0;
+    let syncSize = () => {};
 
     (async () => {
       const mod = await import("p5");
@@ -143,6 +151,8 @@ export function ForceFieldBackground({
         p5InstanceRef.current.remove();
         p5InstanceRef.current = null;
       }
+
+      let relayout = () => {};
 
       const sketch = (p: p5) => {
         let originalImg: p5.Image | undefined;
@@ -175,8 +185,7 @@ export function ForceFieldBackground({
             imageUrl,
             (loaded) => {
               originalImg = loaded;
-              processImage();
-              generatePoints();
+              relayout();
             },
             () => {
               setError("Não foi possível carregar o mapa de partículas.");
@@ -196,14 +205,19 @@ export function ForceFieldBackground({
           return true;
         };
 
-        function relayout() {
-          if (!containerRef.current || !originalImg) return;
-          const { clientWidth, clientHeight } = containerRef.current;
-          if (clientWidth < 2 || clientHeight < 2) return;
-          p.resizeCanvas(clientWidth, clientHeight);
+        relayout = () => {
+          const node = containerRef.current;
+          if (!node) return;
+          const nextW = node.clientWidth;
+          const nextH = node.clientHeight;
+          if (nextW < 2 || nextH < 2) return;
+          if (nextW !== p.width || nextH !== p.height) {
+            p.resizeCanvas(nextW, nextH);
+          }
+          if (!originalImg) return;
           processImage();
           generatePoints();
-        }
+        };
 
         function buildPalette() {
           palette = NODEX_SWATCHES.map((hex) => p.color(hex));
@@ -216,15 +230,20 @@ export function ForceFieldBackground({
           layer.pixelDensity(1);
           layer.background(0);
 
-          const maxW = p.width * 0.6;
-          const maxH = p.height * 0.6;
+          // Overlay (desktop, full hero) vs contained slot (mobile, ~square).
+          const overlay = p.width >= 720;
+          const fraction =
+            propsRef.current.markScale ?? (overlay ? 0.6 : 0.9);
+          const maxW = p.width * fraction;
+          const maxH = p.height * fraction;
           const scale = Math.min(
             maxW / originalImg.width,
             maxH / originalImg.height,
           );
           const drawW = originalImg.width * scale;
           const drawH = originalImg.height * scale;
-          const align = propsRef.current.markAlign;
+          const align =
+            propsRef.current.markAlign ?? (overlay ? "right" : "center");
           const drawX =
             align === "right"
               ? Math.max(p.width * 0.36, p.width - drawW - p.width * 0.1)
@@ -411,19 +430,24 @@ export function ForceFieldBackground({
       const instance = new P5(sketch, containerRef.current);
       p5InstanceRef.current = instance;
 
-      observer = new ResizeObserver(() => {
-        instance.windowResized();
-      });
+      syncSize = () => {
+        relayout();
+      };
+      observer = new ResizeObserver(syncSize);
       observer.observe(containerRef.current);
+      window.addEventListener("resize", syncSize);
+      poll = window.setInterval(syncSize, 250);
     })();
 
     return () => {
       cancelled = true;
       observer?.disconnect();
+      window.removeEventListener("resize", syncSize);
+      window.clearInterval(poll);
       p5InstanceRef.current?.remove();
       p5InstanceRef.current = null;
     };
-  }, [imageUrl, markAlign]);
+  }, [imageUrl, markAlign, markScale]);
 
   return (
     <div
