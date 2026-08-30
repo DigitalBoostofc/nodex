@@ -26,7 +26,7 @@ export function HeroForceField() {
 
   return (
     <div className="absolute inset-0 z-0" aria-hidden>
-      <HeroBackdrop glowAt="72%" glowStrength={0.42} />
+      <HeroBackdrop glowAt="72%" glowStrength={0.42} scan="full" />
       <ForceFieldBackground
         imageUrl="/assets/symbol-on-black.png"
         invertImage={false}

@@ -8,10 +8,13 @@ import type { ReactNode } from "react";
 export function HeroBackdrop({
   glowAt = "50%",
   glowStrength = 0.26,
+  scan = "short",
 }: {
   /** Posição horizontal do glow — um por página (Brand Book §05). */
   glowAt?: string;
   glowStrength?: number;
+  /** `full` rides the whole hero height, unmasked. */
+  scan?: "short" | "full" | "none";
 }) {
   return (
     <>
@@ -23,15 +26,31 @@ export function HeroBackdrop({
           data-nx-anim="grid"
           className="absolute -inset-x-10 -inset-y-20 opacity-70 [animation:nx-grid_6s_linear_infinite] [background-image:linear-gradient(#242424_1px,transparent_1px),linear-gradient(90deg,#242424_1px,transparent_1px)] [background-size:64px_64px]"
         />
-        <div
-          data-nx-anim="line"
-          className="absolute inset-x-0 top-0 h-[220px] [animation:nx-scan_6.5s_cubic-bezier(.4,0,.6,1)_infinite] [background:linear-gradient(180deg,rgba(225,6,0,0),rgba(225,6,0,.3),rgba(225,6,0,0))]"
-        />
+        {scan === "short" ? (
+          <div
+            data-nx-anim="line"
+            className="absolute inset-x-0 top-0 h-[220px] [animation:nx-scan_6.5s_cubic-bezier(.4,0,.6,1)_infinite] [background:linear-gradient(180deg,rgba(225,6,0,0),rgba(225,6,0,.3),rgba(225,6,0,0))]"
+          />
+        ) : null}
         <div
           data-nx-anim="sweep"
           className="absolute inset-y-0 left-0 w-[38%] [animation:nx-sweep_7.5s_ease-in-out_infinite] [background:linear-gradient(90deg,rgba(225,6,0,0),rgba(255,20,32,.14),rgba(225,6,0,0))]"
         />
       </div>
+      {scan === "full" ? (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 overflow-hidden"
+        >
+          <div
+            data-nx-anim="line"
+            className="absolute inset-x-0 h-[128px] -translate-y-1/2 [animation:nx-scan-full_6.5s_linear_infinite]"
+          >
+            <div className="absolute inset-0 [background:linear-gradient(180deg,rgba(225,6,0,0),rgba(225,6,0,.42),rgba(225,6,0,0))]" />
+            <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-[#FF1420]/80 [box-shadow:0_0_18px_rgba(225,6,0,.7)]" />
+          </div>
+        </div>
+      ) : null}
       <div
         aria-hidden
         data-nx-anim="glow"

@@ -27,6 +27,9 @@ export type ForceFieldBackgroundProps = {
   className?: string;
 };
 
+const SCAN_MS = 6500;
+const WAVE_BAND = 92;
+
 const NODEX_SWATCHES = [
   "#ffffff",
   "#f2f2f2",
@@ -328,6 +331,9 @@ export function ForceFieldBackground({
           img.loadPixels();
           p.noFill();
 
+          const scanT = (p.millis() % SCAN_MS) / SCAN_MS;
+          const scanY = scanT * p.height;
+
           for (const pt of points) {
             const x = pt.pos.x;
             const y = pt.pos.y;
@@ -376,9 +382,28 @@ export function ForceFieldBackground({
             }
             const color = palette[shadeIndex];
             if (!color) continue;
+
+            const onMark = isRedMark || mark > 48;
+            let drawX = x;
+            let drawY = y;
+            if (onMark) {
+              const dist = y - scanY;
+              if (Math.abs(dist) < WAVE_BAND) {
+                const env = 1 - Math.abs(dist) / WAVE_BAND;
+                const env2 = env * env;
+                const phase =
+                  pt.originalPos.x * 0.048 + p.millis() * 0.007;
+                drawX = x + Math.sin(phase) * 26 * env2;
+                drawY =
+                  y +
+                  Math.cos(phase * 0.72) * 10 * env2 +
+                  Math.sin((dist / WAVE_BAND) * Math.PI) * 14 * env;
+              }
+            }
+
             p.stroke(color);
             p.strokeWeight(strokeSize);
-            p.point(x, y);
+            p.point(drawX, drawY);
           }
         };
       };
