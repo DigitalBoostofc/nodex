@@ -42,7 +42,9 @@ export function CaseCoverflow({
   prevLabel?: string;
   nextLabel?: string;
 }) {
-  const firstCase = items.findIndex((item) => item.kind === "case");
+  const firstCase = items.findIndex(
+    (item) => item.kind === "case" && Boolean(item.href),
+  );
   const [active, setActive] = useState(firstCase >= 0 ? firstCase : 0);
   const last = items.length - 1;
   const stageRef = useRef<HTMLDivElement>(null);

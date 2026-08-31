@@ -55,9 +55,11 @@ const PROCESS: Step[] = [
 
 const CASES: CaseSlide[] = [
   {
-    kind: "ghost",
-    title: "Próximo lançamento",
-    text: "Espaço reservado para o próximo sistema em produção.",
+    kind: "case",
+    kicker: "APP DE INVENTÁRIO PATRIMONIAL",
+    title: "InvSync",
+    text: "Em breve",
+    image: "/assets/cases/invsync.webp",
   },
   {
     kind: "case",
