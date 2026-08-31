@@ -58,7 +58,8 @@ const CASES: CaseSlide[] = [
     kind: "case",
     kicker: "APP DE INVENTÁRIO PATRIMONIAL",
     title: "InvSync",
-    text: "Em breve",
+    text: "EM BREVE",
+    accentText: true,
     image: "/assets/cases/invsync.webp",
   },
   {
