@@ -15,6 +15,8 @@ export type CaseSlide = {
   text: string;
   image?: string;
   href?: string;
+  /** `screen` usa a imagem como captura do produto, não como logo quadrado. */
+  imageStyle?: "logo" | "screen";
 };
 
 function positionFor(offset: number) {
@@ -24,21 +26,51 @@ function positionFor(offset: number) {
   return "far";
 }
 
-export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
+const REDUCE_QUERY = "(prefers-reduced-motion: reduce)";
+
+export function CaseCoverflow({
+  items,
+  cycleMs,
+  label = "Cases em produção",
+  prevLabel = "Case anterior",
+  nextLabel = "Próximo case",
+}: {
+  items: readonly CaseSlide[];
+  /** Autoavança e volta ao primeiro. Omitir desliga o ciclo. */
+  cycleMs?: number;
+  label?: string;
+  prevLabel?: string;
+  nextLabel?: string;
+}) {
   const firstCase = items.findIndex((item) => item.kind === "case");
   const [active, setActive] = useState(firstCase >= 0 ? firstCase : 0);
   const last = items.length - 1;
   const stageRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef(active);
   const swiped = useRef(false);
-  activeRef.current = active;
+  const paused = useRef(false);
+
+  useEffect(() => {
+    activeRef.current = active;
+  }, [active]);
 
   const goTo = useCallback(
     (index: number) => {
+      paused.current = true;
       setActive(Math.max(0, Math.min(last, index)));
     },
     [last],
   );
+
+  useEffect(() => {
+    if (!cycleMs || items.length < 2) return;
+    if (window.matchMedia(REDUCE_QUERY).matches) return;
+    const timer = window.setInterval(() => {
+      if (paused.current) return;
+      setActive((index) => (index + 1) % items.length);
+    }, cycleMs);
+    return () => window.clearInterval(timer);
+  }, [cycleMs, items.length]);
 
   const step = useCallback(
     (dir: -1 | 1) => {
@@ -134,15 +166,20 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
     <div className="overflow-x-clip">
       <div
         ref={stageRef}
-        className="nx-coverflow relative mx-auto flex h-[420px] w-full max-w-[1000px] touch-pan-y items-center justify-center md:h-[460px]"
+        className={`nx-coverflow relative mx-auto flex w-full max-w-[1000px] touch-pan-y items-center justify-center ${
+          items.some((slide) => slide.imageStyle === "screen")
+            ? "h-[460px] md:h-[500px]"
+            : "h-[420px] md:h-[460px]"
+        }`}
         aria-roledescription="carrossel"
-        aria-label="Cases em produção"
+        aria-label={label}
         tabIndex={0}
         onKeyDown={onStageKey}
       >
         {items.map((item, index) => {
           const pos = positionFor(index - active);
           const on = index === active;
+          const screenCards = items.some((slide) => slide.imageStyle === "screen");
 
           const body = (
             <>
@@ -160,12 +197,23 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
                 </div>
               ) : (
                 <>
+                  {item.image && item.imageStyle === "screen" ? (
+                    <div className="-mx-5 -mt-5 mb-4 overflow-hidden rounded-t-[14px] border-b border-nx-border-soft md:-mx-6 md:-mt-6">
+                      <Image
+                        src={item.image}
+                        alt=""
+                        width={1200}
+                        height={680}
+                        className="h-[168px] w-full object-cover object-left-top md:h-[196px]"
+                      />
+                    </div>
+                  ) : null}
                   {item.kicker ? (
                     <span className="font-mono text-[11px]/[1] font-medium tracking-[0.2em] text-nx-muted">
                       {item.kicker}
                     </span>
                   ) : null}
-                  {item.image ? (
+                  {item.image && item.imageStyle !== "screen" ? (
                     <div className="my-5 flex justify-center md:my-6">
                       <Image
                         src={item.image}
@@ -187,9 +235,9 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
             </>
           );
 
-          const className = `nx-card nx-coverflow-card absolute box-border flex h-[400px] w-[min(78vw,320px)] flex-col overflow-hidden px-5 pt-5 pb-9 md:h-[440px] md:w-[380px] md:px-6 md:pt-6 md:pb-11 ${
-            item.kind === "ghost" ? "bg-[#050505]" : "bg-nx-surface"
-          }`;
+          const className = `nx-card nx-coverflow-card absolute box-border flex w-[min(78vw,320px)] flex-col overflow-hidden px-5 pt-5 pb-9 md:w-[380px] md:px-6 md:pt-6 md:pb-11 ${
+            screenCards ? "h-[440px] md:h-[480px]" : "h-[400px] md:h-[440px]"
+          } ${item.kind === "ghost" ? "bg-[#050505]" : "bg-nx-surface"}`;
 
           if (item.kind === "case" && item.href) {
             return (
@@ -237,8 +285,8 @@ export function CaseCoverflow({ items }: { items: readonly CaseSlide[] }) {
         active={active}
         onGo={goTo}
         labelFor={(index) => `Ver ${items[index].title}`}
-        prevLabel="Case anterior"
-        nextLabel="Próximo case"
+        prevLabel={prevLabel}
+        nextLabel={nextLabel}
         className="mt-6 md:mt-8"
       />
     </div>

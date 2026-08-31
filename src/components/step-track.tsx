@@ -99,11 +99,14 @@ export function StepList({
   steps,
   intro,
   mobileCycleMs,
+  cta,
 }: {
   steps: readonly Step[];
   intro?: ReactNode;
   /** Intervalo do autoplay mobile. Omitir desliga o ciclo. */
   mobileCycleMs?: number;
+  /** `false` esconde o botão. Omitir mantém o CTA da home. */
+  cta?: ReactNode | false;
 }) {
   const scrollerRef = useRef<HTMLOListElement>(null);
   const moving = useRef(false);
@@ -116,7 +119,10 @@ export function StepList({
   const [slide, setSlide] = useState(0);
   const total = steps.length;
   const active = desktop ? cycleActive : slide;
-  slideRef.current = slide;
+
+  useEffect(() => {
+    slideRef.current = slide;
+  }, [slide]);
 
   useEffect(() => {
     const mq = window.matchMedia(MD_QUERY);
@@ -343,11 +349,15 @@ export function StepList({
         nextLabel="Próxima etapa"
         className="mt-6 md:hidden motion-reduce:hidden"
       />
-      <div className="mt-8 flex justify-center md:mt-12">
-        <a href="#contato" className="nx-btn nx-btn-pill">
-          Solicitar sistema
-        </a>
-      </div>
+      {cta === false ? null : (
+        <div className="mt-8 flex justify-center md:mt-12">
+          {cta ?? (
+            <a href="#contato" className="nx-btn nx-btn-pill">
+              Solicitar sistema
+            </a>
+          )}
+        </div>
+      )}
     </div>
   );
 }
