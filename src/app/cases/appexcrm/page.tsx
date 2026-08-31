@@ -150,11 +150,7 @@ export default function AppexcrmPage() {
       <Section className="overflow-x-clip py-16 md:py-24">
         <div className="mb-10 text-center md:mb-14">
           <span className="nx-label-red">O PRODUTO</span>
-          <h2 className="nx-h2 mt-5 mb-4">Telas da operação real.</h2>
-          <p className="nx-body-l mx-auto max-w-[46ch]">
-            Capturas do AppexCRM em produção. Arraste no celular — o palco é o
-            mesmo da home de sistemas.
-          </p>
+          <h2 className="nx-h2 mt-5 mb-0">Telas da operação real.</h2>
         </div>
         <CaseCoverflow
           items={SCREENS}
