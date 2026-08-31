@@ -16,7 +16,9 @@ const SERVICES = [
 
 const BUDGETS = [
   { value: "indefinido", label: "Não tenho valor definido" },
-  { value: "ate-10", label: "Até R$ 10.000" },
+  { value: "ate-2500", label: "Até R$ 2.500" },
+  { value: "2500-5000", label: "R$ 2.500 a R$ 5.000" },
+  { value: "5000-10000", label: "R$ 5.000 a R$ 10.000" },
   { value: "10-25", label: "R$ 10.000 a R$ 25.000" },
   { value: "25-50", label: "R$ 25.000 a R$ 50.000" },
   { value: "50-100", label: "R$ 50.000 a R$ 100.000" },
@@ -27,18 +29,15 @@ type Status = "editing" | "sending" | "sent" | "error";
 
 function Field({
   label,
-  optional = false,
   children,
 }: {
   label: string;
-  optional?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <label className="flex flex-col gap-2">
       <span className="font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-nx-muted">
         {label}
-        {optional ? <span className="text-nx-dim"> (OPCIONAL)</span> : null}
       </span>
       {children}
     </label>
@@ -104,10 +103,11 @@ export function ContactForm({ compact = false }: { compact?: boolean }) {
         />
       </Field>
 
-      <Field label="EMPRESA" optional>
+      <Field label="EMPRESA">
         <input
           type="text"
           name="empresa"
+          required
           autoComplete="organization"
           placeholder="Digite o nome da empresa"
           className="nx-input"
