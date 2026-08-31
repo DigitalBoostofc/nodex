@@ -6,7 +6,7 @@
  */
 
 export const PHONE_DISPLAY = "+55 14 98122-1882";
-export const EMAIL = "contato@nodexlabsbr.com.br";
+export const EMAIL = "contato@nodexlabs.com.br";
 
 export type PageKey =
   | "home"
