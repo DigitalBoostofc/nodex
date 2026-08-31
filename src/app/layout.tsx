@@ -50,8 +50,8 @@ export const metadata: Metadata = {
       "Nodex Labs constrói chatbots, automações e sistemas sob medida. Engenharia e IA no mesmo time.",
   },
   icons: {
-    icon: "/assets/appicon-on-black.png",
-    apple: "/assets/appicon-on-black.png",
+    icon: "/favicon.ico",
+    apple: "/apple-icon.png",
   },
 };
 
