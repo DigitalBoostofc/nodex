@@ -47,16 +47,6 @@ const SCREENS: CaseSlide[] = [
   },
 ];
 
-const BUILT = [
-  { kicker: "01", title: "Inbox WhatsApp", text: "Número da empresa, não do vendedor." },
-  { kicker: "02", title: "Funil Kanban", text: "Negócio, etapa e valor na mesma tela." },
-  { kicker: "03", title: "Qualificação", text: "Lead vira ficha dentro da conversa." },
-  { kicker: "04", title: "Automações", text: "Cadência cobra o silêncio por você." },
-  { kicker: "05", title: "Agenda", text: "Tarefa ligada ao negócio, não ao bloco de notas." },
-  { kicker: "06", title: "Cadastros", text: "Contato, empresa e produto no mesmo lugar." },
-  { kicker: "07", title: "Papéis", text: "Dono, gerente e vendedor veem o que podem ver." },
-];
-
 const FLOW: Step[] = [
   {
     title: "Chega no WhatsApp",
@@ -173,34 +163,6 @@ export default function AppexcrmPage() {
           prevLabel="Tela anterior"
           nextLabel="Próxima tela"
         />
-      </Section>
-
-      <Section className="py-16 md:py-24">
-        <SectionHead
-          eyebrow="O QUE FOI CONSTRUÍDO"
-          eyebrowTone="red"
-          title="Um CRM, sete peças"
-          lead="Do primeiro WhatsApp até o negócio ganho, tudo no mesmo lugar."
-          className="mb-8 md:mb-12"
-        />
-        <div className="nx-grid-hairline grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(240px,1fr))]">
-          {BUILT.map((piece) => (
-            <p
-              key={piece.title}
-              className="p-5 md:p-7"
-            >
-              <span className="font-mono text-[11px]/[1] font-medium tracking-[0.2em] text-nx-red">
-                {piece.kicker}
-              </span>
-              <span className="mt-3 block font-display text-[20px]/[1.25] font-medium tracking-[-0.02em] text-white">
-                {piece.title}
-              </span>
-              <span className="mt-2 block text-[16px]/[1.55] font-light text-nx-text-2 md:text-[17px]/[1.55]">
-                {piece.text}
-              </span>
-            </p>
-          ))}
-        </div>
       </Section>
 
       <Section className="py-16 md:py-24">
