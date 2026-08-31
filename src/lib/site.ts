@@ -6,7 +6,10 @@
  */
 
 export const PHONE_DISPLAY = "+55 14 98122-1882";
+export const PHONE_WHATSAPP = "5514981221882";
 export const EMAIL = "contato@nodexlabs.com.br";
+export const ADDRESS = "Rua Marcos Albino, 300 — km 12, Itajaí/SC";
+export const CNPJ = "57.842.141/0001-79";
 
 export type PageKey =
   | "home"
