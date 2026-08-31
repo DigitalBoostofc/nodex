@@ -59,8 +59,10 @@ export default function CasesPage() {
             </span>
           </Link>
 
-          {/* Sem link: o case longo espera o briefing (docs/copy-orientacao.md §9). */}
-          <div className="nx-card nx-card-hover p-9">
+          <Link
+            href="/cases/appexcrm"
+            className="nx-card nx-card-hover block p-9 hover:text-inherit"
+          >
             <span className="font-mono text-[11px]/[1] font-medium tracking-[0.2em] text-nx-muted">
               OPERAÇÃO COMERCIAL · CRM
             </span>
@@ -78,10 +80,10 @@ export default function CasesPage() {
               CRM desenhado para a operação comercial, não para um template de
               funil.
             </p>
-            <span className="inline-block rounded-[4px] border border-nx-border-warm px-3 py-[9px] font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-nx-red">
-              CASE COMPLETO EM BREVE
+            <span className="text-[14px]/[1] font-medium text-nx-red">
+              Ler o case →
             </span>
-          </div>
+          </Link>
         </div>
       </Section>
 

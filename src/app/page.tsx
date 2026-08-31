@@ -73,7 +73,7 @@ const CASES: CaseSlide[] = [
     title: "AppexCRM",
     text: "CRM sob medida para a operação comercial.",
     image: "/assets/cases/appexcrm.webp",
-    href: "/cases",
+    href: "/cases/appexcrm",
   },
 ];
 
