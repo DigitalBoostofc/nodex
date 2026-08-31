@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 
 import { CtaButtons } from "@/components/cta-buttons";
 import { HistoryTrack, type Chapter } from "@/components/history-track";
@@ -51,23 +50,6 @@ const PILLARS = [
   {
     title: "Confiança",
     text: "Prazo, escopo e limite ditos na primeira reunião.",
-  },
-];
-
-const TEAM = [
-  { name: "Leonardo Groff", role: "CEO", photo: "leonardo-groff" },
-  { name: "Georgia Carine", role: "CTO", photo: "georgia-carine" },
-  { name: "Leonardo Falcão", role: "HEAD DE IA", photo: "leonardo-falcao" },
-  {
-    name: "Dennis Fernandes",
-    role: "ENGENHEIRO DE SOFTWARE SÊNIOR",
-    photo: "dennis-fernandes",
-  },
-  { name: "Davi Azevedo", role: "DIRETOR DE DESIGN", photo: "davi-azevedo" },
-  {
-    name: "Paula Rodrigues",
-    role: "DIRETORA COMERCIAL",
-    photo: "paula-rodrigues",
   },
 ];
 
@@ -178,37 +160,6 @@ export default function SobrePage() {
           ))}
         </div>
       </Section>
-
-      <section className="border-t border-nx-border-soft">
-        <div className="mx-auto max-w-[1280px] px-5 py-28 text-center md:px-8 lg:px-12">
-          <span className="nx-label">LIDERANÇA</span>
-          <h2 className="nx-h2 mt-5 mb-4">
-            Conheça a <span className="text-nx-red">equipe</span>
-          </h2>
-          <p className="nx-body-l mx-auto mb-14 max-w-[56ch]">
-            As pessoas que assinam o escopo, o código e a entrega.
-          </p>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {TEAM.map((person) => (
-              <div key={person.name} className="nx-card nx-card-hover p-9">
-                <Image
-                  src={`/assets/team/${person.photo}.webp`}
-                  alt={person.name}
-                  width={132}
-                  height={132}
-                  className="mx-auto mb-6 h-[132px] w-[132px] rounded-full object-cover"
-                />
-                <p className="mb-2 font-display text-[20px]/[1.3] font-medium text-white">
-                  {person.name}
-                </p>
-                <p className="font-mono text-[11px]/[1] font-medium tracking-[0.18em] text-nx-red">
-                  {person.role}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       <CtaButtons
         title="Se o problema já está claro, a próxima conversa é de escopo."
