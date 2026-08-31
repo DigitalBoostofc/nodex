@@ -19,9 +19,17 @@ export async function POST(request: Request) {
   const mensagem = String(form.get("mensagem") ?? "").trim();
   const empresa = String(form.get("empresa") ?? "").trim();
 
-  if (!nome || !email || !whatsapp || !servico || !investimento || !mensagem) {
+  if (
+    !nome ||
+    !empresa ||
+    !email ||
+    !whatsapp ||
+    !servico ||
+    !investimento ||
+    !mensagem
+  ) {
     return NextResponse.json(
-      { error: "Preencha nome, e-mail, WhatsApp, serviço, investimento e mensagem." },
+      { error: "Preencha todos os campos." },
       { status: 400 },
     );
   }
@@ -30,7 +38,7 @@ export async function POST(request: Request) {
     nome,
     email,
     whatsapp,
-    empresa: empresa || null,
+    empresa,
     servico,
     investimento,
     mensagem,
