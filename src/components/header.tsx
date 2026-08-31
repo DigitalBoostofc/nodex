@@ -9,9 +9,10 @@ import { NAV } from "@/lib/site";
 
 
 
-/** "Sistemas" fica na raiz, então a home é o item ativo dela. */
+/** "Sistemas" fica na raiz, então só a home marca esse item. */
 function isActive(pathname: string, href: string) {
-  return pathname === href;
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function Header() {

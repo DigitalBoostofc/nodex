@@ -18,7 +18,7 @@ npm run lint
 
 O canvas é a fonte da verdade quando diverge do doc de copy — ele é mais novo.
 Divergências conhecidas: não existe `/blog`, a nav é `Sistemas · Chatbots ·
-Automações · Cases · Sobre`, e `/cases/appexcrm` não existe como página.
+Automações · Cases · Sobre`.
 
 ## Estrutura
 

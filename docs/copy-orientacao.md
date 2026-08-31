@@ -466,24 +466,49 @@ Só entrar com número que o Leonardo autorizar (OS/mês, profissionais, tempo d
 
 ## 9. Case AppexCRM `/cases/appexcrm`
 
+Tom: história de produto, não case de agência com % inventado.
+
 ### 9.1 Hero
 
 Eyebrow: `CASE · CRM`
-H1: `AppexCRM: CRM da operação, não de catálogo.`
-Sub: `[PREENCHER uma frase verdadeira do que o Appex faz — funil, carteira, pedido, equipe.]`
+H1: `CRM da operação, não de catálogo.`
+Sub: `Inbox de WhatsApp, funil Kanban, automação e agenda. O time vende no mesmo lugar.`
 
-### 9.2 Estrutura (preencher com o Leonardo)
+### 9.2 O problema
 
-Seguir o mesmo molde do Cleanox, sem inventar:
+A operação comercial brasileira vive no WhatsApp. Lead entra, some na conversa e não vira funil. Planilha, grupo, CRM genérico e inbox pessoal tentam dar conta do mesmo dia.
 
-- O problema (o que a planilha/WhatsApp não aguentava)
-- O que foi construído (módulos reais)
-- Como o time usa no dia
-- O que isso prova para quem quer um CRM/sistema
-- Métrica só se existir
-- CTA: `Precisa de um CRM que siga a sua venda? Fale com a Nodex.`
+O risco clássico: o vendedor vira dono da conversa. O follow-up sai da empresa.
 
-Até o Leonardo passar o fato, **não publicar esta página**. No ar, o card em `/cases` e em `/solucoes/sistemas` pode existir com a linha curta, mas o case longo espera o briefing.
+### 9.3 O que foi construído
+
+- Inbox de WhatsApp no número da empresa
+- Funil Kanban com negócio, etapa e valor
+- Qualificação do lead na conversa
+- Automações e cadência de follow-up
+- Agenda e tarefas ligadas ao negócio
+- Contatos, empresas e produtos
+- Papéis de dono, gerente e vendedor
+
+### 9.4 Como o time vende
+
+A mensagem chega no WhatsApp da empresa. O time atende na inbox e qualifica o lead. O negócio entra no funil e anda de etapa. Automação e agenda cobram o follow-up. A conversa não fica no celular de quem atendeu.
+
+### 9.5 O que este case prova para um visitante
+
+Não é “CRM de template”. É: **sistema de operação comercial**, com WhatsApp no centro da regra.
+
+Se o visitante vende no WhatsApp, tem time e perde lead na conversa — este case é o argumento.
+
+### 9.6 Métricas
+
+Só entrar com número que o Leonardo autorizar. Sem número, fecha com:
+
+`Hoje o sistema está em produção em app.appexcrm.com.`
+
+### 9.7 CTA
+
+`Precisa de um CRM que siga a sua venda? Fale com a Nodex.`
 
 ---
 
@@ -658,7 +683,7 @@ Keywords: não encher com lista estilo site EUA (voice agents, Shopify, Medicare
 - [ ] CTA primário único por tela visível
 - [ ] Frases curtas; adjetivo que não muda decisão, cortado
 - [ ] Cleanox descrito como sistema de operação (não “IA mágica de estofado”)
-- [ ] AppexCRM sem parágrafo chutado
+- [x] AppexCRM descrito como CRM da operação comercial (não template de funil)
 - [ ] Contato sem Oklahoma / telefone +1
 - [ ] Blog sem artigo fantasma (se o post não existe, não aparece no índice)
 - [ ] `[PREENCHER]` resolvidos ou a seção omitida
@@ -672,7 +697,7 @@ Keywords: não encher com lista estilo site EUA (voice agents, Shopify, Medicare
 3. Cases Cleanox
 4. Chatbots e Automações
 5. Contato e Sobre
-6. AppexCRM (depois do briefing)
+6. AppexCRM
 7. Blog: um artigo real antes de ligar o índice
 8. Legal
 

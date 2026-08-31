@@ -15,6 +15,7 @@ export type PageKey =
   | "automacoes"
   | "cases"
   | "cleanox"
+  | "appexcrm"
   | "sobre"
   | "contato";
 

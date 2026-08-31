@@ -11,6 +11,7 @@ const ROUTES: ReadonlyArray<readonly [string, PageKey]> = [
   ["/solucoes/automacoes", "automacoes"],
   ["/cases", "cases"],
   ["/cases/cleanox", "cleanox"],
+  ["/cases/appexcrm", "appexcrm"],
   ["/sobre", "sobre"],
   ["/contato", "contato"],
 ];
