@@ -4,7 +4,6 @@ import Link from "next/link";
 
 import { CaseCoverflow, type CaseSlide } from "@/components/case-coverflow";
 import { CtaButtons } from "@/components/cta-buttons";
-import { ProblemRail, type Problem } from "@/components/problem-rail";
 import { StepList, type Step } from "@/components/step-track";
 import { HeroBackdrop, HeroPill, Section, SectionHead } from "@/components/ui";
 
@@ -43,29 +42,8 @@ const SCREENS: CaseSlide[] = [
     kind: "case",
     kicker: "MARCA",
     title: "AppexCRM",
-    text: "Produto da Nodex Labs, no ar em app.appexcrm.com.",
+    text: "Produto da Nodex Labs, no ar em appexcrm.com.",
     image: "/assets/appexcrm/logo.png",
-  },
-];
-
-const PROBLEMS: Problem[] = [
-  {
-    kicker: "WHATSAPP SOLTO",
-    title: "Lead entra e some na conversa",
-    text: "A venda acontece no WhatsApp. Sem inbox da empresa, o follow-up fica no celular de quem atendeu.",
-    image: "/assets/problems/repeat.webp",
-  },
-  {
-    kicker: "O FULANO SABE",
-    title: "O funil mora na cabeça de alguém",
-    text: "Planilha, grupo e “pergunta o João”. Quando essa pessoa falta, a operação para.",
-    image: "/assets/problems/head.webp",
-  },
-  {
-    kicker: "CRM GENÉRICO",
-    title: "Você se adapta ao software",
-    text: "Template de funil que não conhece a venda brasileira. O time volta para o WhatsApp.",
-    image: "/assets/problems/tool.webp",
   },
 ];
 
@@ -150,12 +128,12 @@ export default function AppexcrmPage() {
             <p className="mt-8 font-mono text-[12px]/[1] font-medium tracking-[0.16em] text-nx-muted md:mt-10">
               NODEX LABS ·{" "}
               <a
-                href="https://app.appexcrm.com"
+                href="https://appexcrm.com"
                 target="_blank"
                 rel="noopener"
                 className="text-nx-red-hover"
               >
-                app.appexcrm.com
+                appexcrm.com
               </a>
             </p>
           </div>
@@ -176,25 +154,6 @@ export default function AppexcrmPage() {
               />
             </div>
           </figure>
-        </div>
-      </section>
-
-      <section className="relative overflow-hidden border-t border-nx-border-soft">
-        <div
-          aria-hidden
-          data-nx-anim="glow"
-          className="pointer-events-none absolute inset-x-0 top-[42%] h-[420px] -translate-y-1/2 [animation:nx-drift_13s_ease-in-out_infinite] [background:radial-gradient(ellipse_at_50%_50%,rgba(225,6,0,.16),transparent_62%)]"
-        />
-        <div className="relative mx-auto max-w-[1280px] px-5 py-16 md:px-8 md:py-24 lg:px-12">
-          <SectionHead
-            eyebrow="O PROBLEMA"
-            eyebrowTone="red"
-            title={
-              <span className="block max-w-[16ch]">Sem CRM, a venda se espalha</span>
-            }
-            className="mb-10 md:mb-14"
-          />
-          <ProblemRail items={PROBLEMS} />
         </div>
       </section>
 
@@ -290,12 +249,12 @@ export default function AppexcrmPage() {
         <p className="mt-8 font-mono text-[13px]/[1.6] text-nx-muted md:text-[15px]/[1.6]">
           EM PRODUÇÃO ·{" "}
           <a
-            href="https://app.appexcrm.com"
+            href="https://appexcrm.com"
             target="_blank"
             rel="noopener"
             className="text-nx-red-hover"
           >
-            app.appexcrm.com
+            appexcrm.com
           </a>
         </p>
       </Section>
