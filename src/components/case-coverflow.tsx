@@ -17,6 +17,8 @@ export type CaseSlide = {
   href?: string;
   /** `screen` usa a imagem como captura do produto, não como logo quadrado. */
   imageStyle?: "logo" | "screen";
+  /** Texto de status (ex.: EM BREVE) em vermelho da marca. */
+  accentText?: boolean;
 };
 
 function positionFor(offset: number) {
@@ -229,7 +231,13 @@ export function CaseCoverflow({
                   <p className="mb-[14px] font-display text-[26px]/[1.2] font-medium tracking-[-0.01em] text-white md:text-[30px]/[1.2]">
                     {item.title}
                   </p>
-                  <p className="text-[16px]/[1.65] font-light text-nx-muted md:text-[17px]/[1.65]">
+                  <p
+                    className={
+                      item.accentText
+                        ? "text-[16px]/[1.65] font-medium tracking-[0.14em] text-nx-red md:text-[17px]/[1.65]"
+                        : "text-[16px]/[1.65] font-light text-nx-muted md:text-[17px]/[1.65]"
+                    }
+                  >
                     {item.text}
                   </p>
                 </>
