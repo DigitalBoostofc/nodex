@@ -34,8 +34,8 @@ const PILLARS = ["TECNOLOGIA", "ESTRATÉGIA", "PERFORMANCE", "CONFIANÇA"];
 export function Footer() {
   return (
     <footer className="border-t border-nx-border-soft bg-black">
-      <div className="mx-auto grid max-w-[1280px] grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-12 px-5 pt-[72px] pb-10 md:px-8 lg:px-12">
-        <div>
+      <div className="mx-auto flex max-w-[1280px] flex-col gap-12 px-5 pt-[72px] pb-10 md:px-8 lg:flex-row lg:items-start lg:justify-between lg:gap-16 lg:px-12">
+        <div className="max-w-[34ch]">
           <Image
             src="/assets/logo-on-black.png"
             alt="Nodex Labs"
@@ -43,7 +43,7 @@ export function Footer() {
             height={72}
             className="mb-[22px] block h-[26px] w-auto mix-blend-screen"
           />
-          <p className="nx-body mb-[22px] max-w-[34ch]">
+          <p className="nx-body mb-[22px]">
             Sistemas e IA para operação que já existe e precisa funcionar
             sozinha.
           </p>
@@ -67,22 +67,24 @@ export function Footer() {
           </p>
         </div>
 
-        {COLUMNS.map((column) => (
-          <div key={column.title} className="flex flex-col gap-[6px]">
-            <span className="mb-2 font-mono text-[11px]/[1] font-medium tracking-[0.2em] text-nx-dim">
-              {column.title}
-            </span>
-            {column.links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="block py-[14px] text-[16px]/[1] font-light text-nx-text-2 hover:text-white"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        ))}
+        <div className="flex flex-wrap gap-x-16 gap-y-10 lg:justify-end lg:pt-1">
+          {COLUMNS.map((column) => (
+            <div key={column.title} className="flex min-w-[140px] flex-col gap-[6px]">
+              <span className="mb-2 font-mono text-[11px]/[1] font-medium tracking-[0.2em] text-nx-dim">
+                {column.title}
+              </span>
+              {column.links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="block py-[14px] text-[16px]/[1] font-light text-nx-text-2 hover:text-white"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="mx-auto max-w-[1280px] px-5 pb-14 md:px-8 lg:px-12">
