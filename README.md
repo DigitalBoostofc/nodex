@@ -71,4 +71,4 @@ find .next/dev/cache/images -mindepth 1 -delete
   WhatsApp do lead, instância da Mari). Override: `N8N_CONTATO_WEBHOOK_URL`.
 - **Logo em PNG, não SVG.** O checklist de aceite do Brand Book §10 pede SVG nos
   quatro formatos oficiais; o projeto de design só tem PNG.
-- **`© 2024` no rodapé** — veio assim do canvas.
+

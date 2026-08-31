@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { EMAIL } from "@/lib/site";
+import { ADDRESS, CNPJ, EMAIL, PHONE_DISPLAY, PHONE_WHATSAPP } from "@/lib/site";
 
 const COLUMNS = [
   {
@@ -52,6 +52,18 @@ export function Footer() {
             <a href={`mailto:${EMAIL}`} className="text-nx-red">
               {EMAIL}
             </a>
+            <br />
+            WHATSAPP ·{" "}
+            <a
+              href={`https://wa.me/${PHONE_WHATSAPP}`}
+              className="text-nx-red"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {PHONE_DISPLAY}
+            </a>
+            <br />
+            ENDEREÇO · <span className="text-nx-red">{ADDRESS}</span>
           </p>
         </div>
 
@@ -85,8 +97,8 @@ export function Footer() {
               </span>
             ))}
           </div>
-          <span className="font-mono text-[12px]/[1] text-nx-dim">
-            © 2024 NODEX LABS
+          <span className="max-w-[42ch] font-mono text-[11px]/[1.5] text-nx-dim md:max-w-none md:text-[12px]/[1.5]">
+            © 2024 NODEX LABS — Todos os direitos reservados — CNPJ {CNPJ}
           </span>
         </div>
       </div>
