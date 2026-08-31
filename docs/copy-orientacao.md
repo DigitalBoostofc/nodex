@@ -595,7 +595,7 @@ Campo: e-mail. Botão: `Quero receber`
 
 Eyebrow: `CONTATO`
 H1: `Fale com a Nodex.`
-Sub: `Conta o problema em poucas linhas. Voltamos em um dia útil com o próximo passo — ou com a pergunta que falta.`
+Sub: `Nos conte os seus problemas, que te diremos a solução.`
 
 ### 12.1 Formulário (máximo 4 campos; Brand Book pede 3 se couber)
 
