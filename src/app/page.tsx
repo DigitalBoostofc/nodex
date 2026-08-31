@@ -92,11 +92,6 @@ const FAQ: FaqItem[] = [
       "Construímos o produto. Usamos bloco maduro por baixo, como banco, autenticação e base de app, para não reinventar o óbvio e gastar o tempo na regra do seu negócio.",
   },
   {
-    question: "Fico dono do código?",
-    answer:
-      "Trabalhamos com propriedade total do código ou licença de uso, dependendo do escopo e do investimento. O modelo é escolhido com você e escrito em contrato antes da primeira linha. Nunca vira discussão na entrega.",
-  },
-  {
     question: "Precisa trocar os sistemas que já usamos?",
     answer:
       "Não. Ligamos no que já roda: CRM, ERP, planilha, WhatsApp. Substituir só entra em cena quando o sistema atual é o próprio problema, e essa decisão é tomada no diagnóstico.",
