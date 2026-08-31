@@ -67,9 +67,8 @@ find .next/dev/cache/images -mindepth 1 -delete
 
 ## Pendências
 
-- **`POST /api/contato` só dispara WhatsApp se `N8N_CONTATO_WEBHOOK_URL` existir.**
-  Sem a env, a ficha fica só no log. O fluxo n8n (grupo Nodex + lead) fica
-  desligado até o disparo ser autorizado.
+- **`POST /api/contato` manda a ficha ao n8n** (grupo Nodex + confirmação no
+  WhatsApp do lead, instância da Mari). Override: `N8N_CONTATO_WEBHOOK_URL`.
 - **Logo em PNG, não SVG.** O checklist de aceite do Brand Book §10 pede SVG nos
   quatro formatos oficiais; o projeto de design só tem PNG.
 - **`© 2024` no rodapé** — veio assim do canvas.
