@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
 
 /**
- * Recebe o formulário de contato.
- *
- * PENDENTE: hoje a mensagem só é registrada no log do servidor. O destino real
- * (e-mail para contato@nodexlabs.com.br, CRM ou webhook) ainda não foi
- * definido — enquanto não for, nenhum lead enviado por aqui chega a ninguém.
- * O canvas de design também não define o destino: lá o submit só troca o
- * estado da tela.
+ * Recebe o formulário e, se N8N_CONTATO_WEBHOOK_URL existir, manda a ficha
+ * para o n8n (grupo Nodex + confirmação no WhatsApp do lead). Sem a env, só
+ * registra no log — o disparo fica desligado de propósito.
  */
 export async function POST(request: Request) {
   const form = await request.formData();
@@ -27,7 +23,7 @@ export async function POST(request: Request) {
     );
   }
 
-  console.info("[contato] nova mensagem", {
+  const payload = {
     nome,
     email,
     whatsapp,
@@ -35,7 +31,42 @@ export async function POST(request: Request) {
     servico,
     investimento,
     mensagem,
-  });
+  };
+
+  console.info("[contato] nova mensagem", payload);
+
+  const webhook = process.env.N8N_CONTATO_WEBHOOK_URL?.trim();
+  if (webhook) {
+    try {
+      const response = await fetch(webhook, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nome,
+          email,
+          whatsapp,
+          empresa,
+          servico,
+          investimento,
+          mensagem,
+        }),
+        signal: AbortSignal.timeout(15_000),
+      });
+      if (!response.ok) {
+        console.error("[contato] n8n webhook falhou", response.status);
+        return NextResponse.json(
+          { error: "Não conseguimos enviar agora. Tente de novo." },
+          { status: 502 },
+        );
+      }
+    } catch (error) {
+      console.error("[contato] n8n webhook erro", error);
+      return NextResponse.json(
+        { error: "Não conseguimos enviar agora. Tente de novo." },
+        { status: 502 },
+      );
+    }
+  }
 
   return NextResponse.json({ ok: true });
 }
