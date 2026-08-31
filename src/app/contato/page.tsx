@@ -7,7 +7,7 @@ import { EMAIL } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Contato",
   description:
-    "Conta o problema em poucas linhas. Voltamos em um dia útil com o próximo passo.",
+    "Nos conte os seus problemas, que te diremos a solução.",
 };
 
 const FAQ = [
@@ -40,8 +40,7 @@ export default function ContatoPage() {
             </p>
             <h1 className="nx-h1-sub mt-[22px]">Fale com a Nodex.</h1>
             <p className="nx-body-l mt-6 mb-10 max-w-[52ch]">
-              Conta o problema em poucas linhas. Voltamos em um dia útil com o
-              próximo passo, ou com a pergunta que falta.
+              Nos conte os seus problemas, que te diremos a solução.
             </p>
             <div className="flex flex-col gap-[14px] border-t border-nx-border pt-8">
               <span className="font-mono text-[14px]/[1.5] text-nx-muted">
